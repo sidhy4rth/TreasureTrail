@@ -98,9 +98,9 @@ h3 { font-size: 1.1rem; }
 .elegant { display: block; flex: none; color: var(--lime); }
 .sprig { display: block; flex: none; color: var(--lime); }
 .elegant-badge { flex: none; width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--border); background: var(--surface); display: grid; place-items: center; color: var(--lime); }
-.bob { animation: bob 2.4s ease-in-out infinite; }
+.bob { animation: bob 2.4s ease-in-out infinite; will-change: transform; }
 @keyframes bob { 50% { transform: translateY(-6px); } }
-.wiggle { animation: wiggle 3.2s ease-in-out infinite; transform-origin: 50% 90%; }
+.wiggle { animation: wiggle 3.2s ease-in-out infinite; transform-origin: 50% 90%; will-change: transform; }
 @keyframes wiggle { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(-4deg); } }
 .bubble {
   background: var(--surface); border: 1px solid var(--border); border-radius: 16px 16px 16px 4px;
@@ -156,8 +156,12 @@ h3 { font-size: 1.1rem; }
 .pill.rejected { color: var(--danger); border-color: rgba(255, 122, 89, 0.45); }
 .pill.ok { color: var(--lime); border-color: rgba(200, 255, 46, 0.5); background: var(--lime-dim); }
 .pill.solid { background: var(--lime); color: var(--on-lime); border-color: var(--lime); font-weight: 700; }
-.live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--lime); box-shadow: 0 0 0 4px var(--lime-dim), 0 0 12px rgba(200, 255, 46, 0.6); flex: none; animation: pulse 2s ease-in-out infinite; }
-@keyframes pulse { 50% { box-shadow: 0 0 0 7px rgba(200, 255, 46, 0.05), 0 0 16px rgba(200, 255, 46, 0.5); } }
+.live-dot { position: relative; width: 8px; height: 8px; border-radius: 50%; background: var(--lime); box-shadow: 0 0 0 4px var(--lime-dim), 0 0 12px rgba(200, 255, 46, 0.6); flex: none; }
+/* Live ping: a ring that grows and fades (transform + opacity only, no repaints). */
+.live-dot::after { content: ''; position: absolute; inset: 0; border-radius: 50%; background: var(--lime); opacity: 0; animation: dot-ping 2s ease-out infinite; will-change: transform, opacity; pointer-events: none; }
+.live-dot.still { box-shadow: none; }
+.live-dot.still::after { display: none; }
+@keyframes dot-ping { 0% { transform: scale(1); opacity: 0.5; } 80%, 100% { transform: scale(3.2); opacity: 0; } }
 .status-chip { display: inline-flex; align-items: center; gap: 8px; height: 32px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); font-family: var(--mono); font-size: 12px; font-weight: 500; color: var(--text); }
 
 /* ---------- buttons & inputs */
@@ -358,7 +362,7 @@ select.input { appearance: auto; }
 .fact .fact-lbl { font-family: var(--mono); font-weight: 500; font-size: 11px; letter-spacing: 0.16em; color: var(--lime); text-transform: uppercase; }
 .fact .hand { font-size: 1rem; line-height: 1.5; margin-top: 4px; color: var(--text); }
 
-.sheet-bg { position: fixed; inset: 0; background: rgba(4, 10, 6, 0.6); backdrop-filter: blur(4px); z-index: 80; display: flex; align-items: flex-end; justify-content: center; animation: fade 0.2s; }
+.sheet-bg { position: fixed; inset: 0; background: rgba(4, 10, 6, 0.74); z-index: 80; display: flex; align-items: flex-end; justify-content: center; animation: fade 0.2s; }
 .sheet { background: var(--bg); width: min(560px, 100%); max-height: 92dvh; overflow: auto; border-radius: 24px 24px 0 0; border: 1px solid var(--border); border-bottom: 0; padding: 1.3rem 1.2rem calc(1.4rem + var(--safe-b)); animation: up 0.25s cubic-bezier(0.2, 0.9, 0.3, 1); }
 @keyframes fade { from { opacity: 0; } }
 @keyframes up { from { transform: translateY(40px); opacity: 0; } }

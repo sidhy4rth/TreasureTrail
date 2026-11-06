@@ -183,7 +183,7 @@ function Feed({ items, byId, frozen }: { items: FeedItem[]; byId: Map<number, Sp
             const who = f.team ? `${f.player} · ${f.team}` : f.player;
             return (
               <div key={f.id} className={`lv-card ${legend ? 'lv-legend' : ''} ${fresh.has(f.id) ? 'lv-new' : ''}`}>
-                <img src={f.thumb_url} alt="" loading="lazy" />
+                <img src={f.thumb_url} alt="" loading="lazy" decoding="async" />
                 <div style={{ minWidth: 0 }}>
                   <div className="lv-cname">
                     {sp?.emoji ?? '🌿'} {sp?.common_name ?? 'A plant'}

@@ -230,7 +230,7 @@ function JudgeCard({ item, onDone }: { item: JudgeItem; onDone: (id: string) => 
 
   return (
     <div className="card jd-card">
-      <img className="jd-photo" src={item.photo_url} alt="Submitted plant" onClick={() => setZoom(true)} loading="lazy" />
+      <img className="jd-photo" src={item.photo_url} alt="Submitted plant" onClick={() => setZoom(true)} loading="lazy" decoding="async" />
       <div className="jd-body">
         <div className="row spread wrap">
           <div style={{ fontWeight: 700 }}>
@@ -430,7 +430,7 @@ function JudgeQueue() {
             <div className="stack" style={{ marginTop: '0.75rem', gap: '0.5rem' }}>
               {data.recent.map((r) => (
                 <div key={r.id} className="card row" style={{ padding: '0.6rem' }}>
-                  <img src={r.thumb_url} alt="" style={{ width: 56, height: 56, objectFit: 'cover', borderRadius: 10 }} />
+                  <img src={r.thumb_url} alt="" loading="lazy" decoding="async" style={{ width: 56, height: 56, objectFit: 'cover', borderRadius: 10 }} />
                   <div className="grow">
                     <div style={{ fontWeight: 700 }}>
                       {r.species_emoji} {r.species_name ?? 'Unknown'} <span className={`pill ${r.status === 'rejected' ? 'rejected' : 'ok'}`}>{r.status}</span>

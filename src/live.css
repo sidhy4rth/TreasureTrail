@@ -66,9 +66,13 @@
 .lv-live i {
   width: 0.62em; height: 0.62em; border-radius: 50%; background: var(--lv-lime);
   box-shadow: 0 0 0 0.3em var(--lv-lime-dim), 0 0 0.9em rgba(200, 255, 46, 0.6);
-  animation: lv-pulse 1.6s ease-in-out infinite;
+  position: relative;
 }
-@keyframes lv-pulse { 50% { box-shadow: 0 0 0 0.55em rgba(200, 255, 46, 0.05), 0 0 1.2em rgba(200, 255, 46, 0.35); } }
+.lv-live i::after {
+  content: ''; position: absolute; inset: 0; border-radius: 50%; background: var(--lv-lime); opacity: 0;
+  animation: lv-pulse 1.6s ease-out infinite; will-change: transform, opacity; pointer-events: none;
+}
+@keyframes lv-pulse { 0% { transform: scale(1); opacity: 0.5; } 80%, 100% { transform: scale(3); opacity: 0; } }
 .lv-brand .lv-sub { font-size: 1.05em; color: var(--lv-muted); font-weight: 500; margin-top: 0.45em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 .lv-stats { display: flex; justify-content: center; gap: 0.7em; }
@@ -119,8 +123,13 @@
 .lv-switch { display: flex; gap: 0.2em; background: var(--lv-surface-2); border: 1px solid var(--lv-border); border-radius: 999px; padding: 0.22em; }
 .lv-switch span { padding: 0.3em 0.95em; border-radius: 999px; font-weight: 600; font-size: 0.95em; color: var(--lv-muted); transition: background 0.4s, color 0.4s; }
 .lv-switch span.on { background: var(--lv-lime); color: var(--lv-on-lime); font-weight: 700; }
-.lv-progress { position: absolute; left: 0; bottom: 0; height: 0.2em; background: var(--lv-lime); box-shadow: 0 0 0.6em rgba(200, 255, 46, 0.6); animation: lv-progress linear forwards; }
-@keyframes lv-progress { from { width: 0; } to { width: 100%; } }
+.lv-progress {
+  position: absolute; left: 0; bottom: 0; width: 100%; height: 0.2em; background: var(--lv-lime);
+  box-shadow: 0 0 0.6em rgba(200, 255, 46, 0.6);
+  transform: scaleX(0); transform-origin: left center; will-change: transform;
+  animation: lv-progress linear forwards;
+}
+@keyframes lv-progress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 
 /* leaderboard rows: absolutely placed so rank changes slide */
 .lv-board { position: relative; flex: 1; }
@@ -137,8 +146,13 @@
 .lv-row .lv-score { font-family: var(--lv-sans); font-weight: 900; font-size: 2.15em; letter-spacing: -0.05em; font-variant-numeric: tabular-nums; }
 .lv-row.lv-r1 { background: var(--lv-lime-dim); border-color: rgba(200, 255, 46, 0.45); }
 .lv-row.lv-r1 .lv-pos, .lv-row.lv-r1 .lv-score { color: var(--lv-lime); }
-.lv-row.lv-bump { animation: lv-bump 0.9s ease; }
-@keyframes lv-bump { 30% { border-color: var(--lv-lime); box-shadow: 0 0 1.2em rgba(200, 255, 46, 0.35); } }
+/* Rank-change flash: a glowing outline that fades in and out (opacity only). */
+.lv-row::after {
+  content: ''; position: absolute; inset: -1px; border-radius: inherit; pointer-events: none;
+  border: 1px solid var(--lv-lime); box-shadow: 0 0 1.2em rgba(200, 255, 46, 0.35); opacity: 0;
+}
+.lv-row.lv-bump::after { animation: lv-bump 0.9s ease; }
+@keyframes lv-bump { 30% { opacity: 1; } }
 
 .lv-empty { flex: 1; display: grid; place-items: center; text-align: center; font-weight: 500; font-size: 1.15em; line-height: 1.5; color: var(--lv-muted); padding: 1em; }
 .lv-empty b { color: var(--lv-text); font-weight: 700; }
@@ -234,7 +248,7 @@
   font-family: var(--lv-mono); font-weight: 700; font-size: 1em; letter-spacing: 0.18em;
   box-shadow: 1.2em 0 1.2em -0.4em var(--lv-bg);
 }
-.lv-track { display: flex; white-space: nowrap; animation: lv-marquee linear infinite; padding-left: 2em; }
+.lv-track { display: flex; white-space: nowrap; animation: lv-marquee linear infinite; padding-left: 2em; will-change: transform; }
 .lv-track span { font-size: 1.22em; font-weight: 500; padding-right: 3.2em; color: var(--lv-text); }
 .lv-track span b { color: var(--lv-lime); font-weight: 700; }
 .lv-track span i { font-style: normal; color: var(--lv-border-2); padding-right: 0.9em; }

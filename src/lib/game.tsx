@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { api, loadSession, rpc, saveSession, type Session } from './api';
 import type { GameState, MyFind, Species } from './types';
 
@@ -49,10 +49,22 @@ export function usePoll<T>(fn: () => Promise<T>, ms: number, deps: unknown[] = [
   const [error, setError] = useState<string | null>(null);
   const fnRef = useRef(fn);
   fnRef.current = fn;
+  const lastJson = useRef<string | null>(null);
 
   const load = useCallback(async () => {
     try {
-      setData(await fnRef.current());
+      const next = await fnRef.current();
+      // Most polls return exactly what we already have: skip the re-render.
+      let json: string | null = null;
+      try {
+        json = JSON.stringify(next);
+      } catch {
+        /* not serialisable: always update */
+      }
+      if (json === null || json !== lastJson.current) {
+        lastJson.current = json;
+        setData(next);
+      }
       setError(null);
     } catch (e) {
       setError((e as Error).message);
@@ -115,7 +127,7 @@ export function useSpecies() {
       clearInterval(t);
     };
   }, []);
-  const byId = new Map(list.map((s) => [s.id, s]));
+  const byId = useMemo(() => new Map(list.map((s) => [s.id, s])), [list]);
   return { list, byId };
 }
 

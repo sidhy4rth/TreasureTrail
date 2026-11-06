@@ -3,13 +3,34 @@ import type { Player, Team } from './types';
 const SB_URL = import.meta.env.VITE_SUPABASE_URL as string;
 const SB_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
 
-/** Public read-only RPC straight to Supabase (no server hop). */
-export async function rpc<T>(fn: string, args: Record<string, unknown> = {}): Promise<T> {
+/** Shared game data served through our CDN-cached proxy (/api/public). */
+const CACHED = new Set(['game_state', 'feed', 'map_points', 'landmarks_state', 'species_list']);
+
+async function rpcDirect<T>(fn: string, args: Record<string, unknown>): Promise<T> {
   const headers: Record<string, string> = { apikey: SB_KEY, 'Content-Type': 'application/json' };
   if (SB_KEY.startsWith('eyJ')) headers.Authorization = `Bearer ${SB_KEY}`;
   const r = await fetch(`${SB_URL}/rest/v1/rpc/${fn}`, { method: 'POST', headers, body: JSON.stringify(args) });
   if (!r.ok) throw new Error(`Couldn't load ${fn} (${r.status})`);
   return r.json() as Promise<T>;
+}
+
+/**
+ * Public read-only RPC. Shared data (leaderboards, feed, map, species) goes
+ * through the edge cache so a hundred phones cost the database one query;
+ * per-player data goes straight to Supabase. Falls back to direct on any proxy error.
+ */
+export async function rpc<T>(fn: string, args: Record<string, unknown> = {}): Promise<T> {
+  if (CACHED.has(fn)) {
+    try {
+      const q = new URLSearchParams({ fn });
+      if (fn === 'feed' && typeof args.n === 'number') q.set('n', String(args.n));
+      const r = await fetch(`/api/public?${q}`);
+      if (r.ok) return (await r.json()) as T;
+    } catch {
+      /* fall through to the direct call */
+    }
+  }
+  return rpcDirect<T>(fn, args);
 }
 
 // ------------------------------------------------------------------ session

@@ -40,39 +40,98 @@ export function landmarkIcon(label: string, big = false) {
   });
 }
 
-const ELEGANT_SVG =
-  '<svg viewBox="-4 -2 72 72" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
-  '<path d="M32 6C46 18 52 32 46 46C42 54 36 58 32 58C28 58 22 54 18 46C12 32 18 18 32 6Z"/><path d="M32 12V26"/>' +
-  '<circle cx="38" cy="36" r="6"/><path d="M44 38C47 41 48 45 47 50"/>' +
-  '<circle cx="26" cy="36" r="2.4" fill="currentColor" stroke="none"/><circle cx="38" cy="36" r="2.4" fill="currentColor" stroke="none"/>' +
-  '<path d="M28 46Q32 49 36 46"/></svg>';
+/** Octagonal building sketch (viewBox 0 0 100 100, centre 50,50) in a pencil style. */
+function octagon(r: number, rot = 22.5) {
+  const pts: string[] = [];
+  for (let k = 0; k < 8; k++) {
+    const a = ((rot + 45 * k) * Math.PI) / 180;
+    pts.push(`${(50 + r * Math.cos(a)).toFixed(2)},${(50 + r * Math.sin(a)).toFixed(2)}`);
+  }
+  return pts.join(' ');
+}
+
+function buildingSvg() {
+  const ns = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(ns, 'svg');
+  svg.setAttribute('viewBox', '0 0 100 100');
+  svg.setAttribute('class', 'hq-bld');
+  svg.setAttribute('aria-hidden', 'true');
+  const ridges: string[] = [];
+  for (let k = 0; k < 8; k++) {
+    const a = ((22.5 + 45 * k) * Math.PI) / 180;
+    ridges.push(`M${(50 + 13 * Math.cos(a)).toFixed(2)} ${(50 + 13 * Math.sin(a)).toFixed(2)}L${(50 + 31 * Math.cos(a)).toFixed(2)} ${(50 + 31 * Math.sin(a)).toFixed(2)}`);
+  }
+  const gables = [0, 90, 180, 270]
+    .map((deg) => `<polygon points="50,9 42,20 58,20" transform="rotate(${deg} 50 50)" />`)
+    .join('');
+  svg.innerHTML =
+    `<circle class="hq-bld-ring" cx="50" cy="50" r="34" />` +
+    `<polygon class="hq-bld-fill" points="${octagon(31)}" />` +
+    `<g class="hq-bld-gables">${gables}</g>` +
+    `<polygon class="hq-bld-line" points="${octagon(31)}" />` +
+    `<polygon class="hq-bld-pencil" points="${octagon(32.2, 24)}" />` +
+    `<path class="hq-bld-ridge" d="${ridges.join('')}" />` +
+    `<polygon class="hq-bld-line" points="${octagon(13)}" />` +
+    `<circle class="hq-bld-dome" cx="50" cy="50" r="6" />`;
+  return svg;
+}
+
+const MINI_ELEGANT =
+  '<svg viewBox="-4 -2 72 72" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+  '<path d="M32 6C46 18 52 32 46 46C42 54 36 58 32 58C28 58 22 54 18 46C12 32 18 18 32 6Z"/>' +
+  '<circle cx="38" cy="36" r="6"/><circle cx="26" cy="36" r="2.6" fill="currentColor" stroke="none"/></svg>';
 
 /**
- * The CoE headquarters: a two-line signboard over an animated lime pin.
- * The pin bobs, Elegant inside it flips like a coin, and radar rings ripple from the base.
+ * The CoE headquarters as a building sketch drawn to real-world size (it scales with zoom),
+ * plus a small floating "AB 001" tag. The full name lives in the map legend.
  */
-export function featuredIcon(l: Pick<Landmark, 'name' | 'short'>, big = false) {
-  const lines = l.name.split(' · ').map((t) => `<b>${esc(t)}</b>`).join('');
-  const tag = l.short ? `<i>${esc(l.short)}</i>` : '';
-  return L.divIcon({
-    html:
-      `<div class="lm-hq ${big ? 'big' : ''}">` +
-      `<div class="lm-sign hq ${big ? 'big' : ''}"><span><em>HQ</em>${lines}${tag}</span></div>` +
-      `<div class="hq-pin"><span class="hq-ripple"></span><span class="hq-ripple r2"></span><span class="hq-shadow"></span>` +
-      `<span class="hq-drop"><span class="hq-face">${ELEGANT_SVG}</span></span></div>` +
-      `</div>`,
-    className: 'lm-wrap',
-    iconSize: [0, 0],
-    iconAnchor: [0, 0],
+export function drawFeatured(group: L.LayerGroup, l: Landmark, big = false) {
+  const halfM = 20; // sketch covers 40 m x 40 m around the pin
+  const dLat = halfM / 111320;
+  const dLng = halfM / (111320 * Math.cos((l.lat * Math.PI) / 180));
+  L.svgOverlay(buildingSvg(), [[l.lat - dLat, l.lng - dLng], [l.lat + dLat, l.lng + dLng]], { interactive: false }).addTo(group);
+  const tag = l.short || l.name;
+  L.marker([l.lat, l.lng], {
+    icon: L.divIcon({
+      html: `<div class="hq-tag ${big ? 'big' : ''}"><span class="hq-mini">${MINI_ELEGANT}</span>${esc(tag)}</div>`,
+      className: 'lm-wrap',
+      iconSize: [0, 0],
+      iconAnchor: [0, 0],
+    }),
+    interactive: false,
+    keyboard: false,
+    zIndexOffset: 400,
+  }).addTo(group);
+}
+
+/** Map legend naming the featured landmarks (top-right corner of the map). */
+export function featuredLegend(featured: Landmark[], big = false) {
+  const Legend = L.Control.extend({
+    onAdd() {
+      const div = L.DomUtil.create('div', `hq-legend ${big ? 'big' : ''}`);
+      div.innerHTML = featured
+        .map(
+          (l) =>
+            `<div class="hq-legend-row"><span class="hq-legend-icon" aria-hidden="true"><svg viewBox="0 0 100 100"><polygon points="${octagon(40)}"/><polygon points="${octagon(16)}"/></svg></span>` +
+            `<span><b>${esc(l.short || 'HQ')}</b><small>${esc(l.name)}</small></span></div>`,
+        )
+        .join('');
+      L.DomEvent.disableClickPropagation(div);
+      return div;
+    },
   });
+  return new Legend({ position: 'topright' });
 }
 
 /** Adds signboards for every landmark to a layer group (clears it first). */
 export function drawLandmarks(group: L.LayerGroup, landmarks: Landmark[], big = false) {
   group.clearLayers();
   for (const l of landmarks) {
-    const icon = l.featured ? featuredIcon(l, big) : landmarkIcon(landmarkLabel(l), big);
-    L.marker([l.lat, l.lng], { icon, interactive: false, keyboard: false, zIndexOffset: l.featured ? 400 : -500 }).addTo(group);
+    if (l.featured) {
+      drawFeatured(group, l, big);
+      continue;
+    }
+    L.marker([l.lat, l.lng], { icon: landmarkIcon(landmarkLabel(l), big), interactive: false, keyboard: false, zIndexOffset: -500 }).addTo(group);
   }
 }
 

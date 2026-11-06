@@ -65,15 +65,23 @@ export default function Journal() {
   const pending = (finds ?? []).filter((f) => f.status === 'pending');
   const mystery = pending.filter((f) => !f.species_id);
   const rejected = (finds ?? []).filter((f) => f.status === 'rejected');
-  const badges = computeBadges(finds ?? [], byId);
+  // The countdown re-renders this page every second; keep the heavier work keyed on its real inputs.
+  const badges = useMemo(() => computeBadges(finds ?? [], byId), [finds, byId]);
   const earned = badges.filter((b) => b.earned).length;
 
-  const sorted = [...species].sort((a, b) => {
-    const fa = mine.has(a.id) ? 0 : 1;
-    const fb = mine.has(b.id) ? 0 : 1;
-    return fa - fb || RANK[a.rarity] - RANK[b.rarity] || a.common_name.localeCompare(b.common_name);
-  });
-  const shown = sorted.filter((s) => (filter === 'all' ? true : filter === 'found' ? mine.has(s.id) : !mine.has(s.id)));
+  const sorted = useMemo(
+    () =>
+      [...species].sort((a, b) => {
+        const fa = mine.has(a.id) ? 0 : 1;
+        const fb = mine.has(b.id) ? 0 : 1;
+        return fa - fb || RANK[a.rarity] - RANK[b.rarity] || a.common_name.localeCompare(b.common_name);
+      }),
+    [species, mine],
+  );
+  const shown = useMemo(
+    () => sorted.filter((s) => (filter === 'all' ? true : filter === 'found' ? mine.has(s.id) : !mine.has(s.id))),
+    [sorted, filter, mine],
+  );
 
   const st = state?.settings;
   const startMs = st?.starts_at ? new Date(st.starts_at).getTime() : null;
@@ -93,11 +101,11 @@ export default function Journal() {
 
       <div className="status-chip">
         {startMs && now < startMs ? (
-          <><span className="live-dot" style={{ background: 'var(--warn)', boxShadow: 'none', animation: 'none' }} />Trail opens in <span className="lime">{fmtCountdown(startMs - now)}</span></>
+          <><span className="live-dot still" style={{ background: 'var(--warn)' }} />Trail opens in <span className="lime">{fmtCountdown(startMs - now)}</span></>
         ) : endMs && now < endMs ? (
           <><span className="live-dot" />Trail is live · <span className="lime">{fmtCountdown(endMs - now)}</span> left</>
         ) : endMs && now >= endMs ? (
-          <><span className="live-dot" style={{ background: 'var(--muted)', boxShadow: 'none', animation: 'none' }} />Trail closed</>
+          <><span className="live-dot still" style={{ background: 'var(--muted)' }} />Trail closed</>
         ) : (
           <><span className="live-dot" />Trail is live</>
         )}
@@ -157,13 +165,13 @@ export default function Journal() {
           {pending.length > 0 && <div className="row wrap"><span className="pill pending">{pending.length} WITH JUDGES</span><span className="small muted">Points land when a judge approves.</span></div>}
           {mystery.map((f) => (
             <div key={f.id} className="row">
-              <img src={f.thumb_url} alt="" style={{ width: 48, height: 48, objectFit: 'cover', borderRadius: 10 }} />
+              <img src={f.thumb_url} alt="" loading="lazy" decoding="async" style={{ width: 48, height: 48, objectFit: 'cover', borderRadius: 10 }} />
               <div className="small"><b>Mystery plant</b><br /><span className="muted">Elegant's guess: {f.ai_common || f.ai_name || 'unknown'}. A judge will name it.</span></div>
             </div>
           ))}
           {rejected.slice(0, 3).map((f) => (
             <div key={f.id} className="row">
-              <img src={f.thumb_url} alt="" style={{ width: 48, height: 48, objectFit: 'cover', borderRadius: 10, filter: 'grayscale(1)' }} />
+              <img src={f.thumb_url} alt="" loading="lazy" decoding="async" style={{ width: 48, height: 48, objectFit: 'cover', borderRadius: 10, filter: 'grayscale(1)' }} />
               <div className="small"><span className="pill rejected">NOT ACCEPTED</span> <span className="muted">{f.judge_note || "The judges couldn't confirm this one."}</span></div>
             </div>
           ))}
@@ -190,7 +198,7 @@ export default function Journal() {
             return (
               <button key={s.id} className={`specimen found ${s.rarity} ${f.status === 'pending' ? 'pending' : ''}`} onClick={() => setOpen(s)}>
                 <span className="art">
-                  <img src={f.thumb_url} alt={s.common_name} loading="lazy" />
+                  <img src={f.thumb_url} alt={s.common_name} loading="lazy" decoding="async" />
                   {f.status === 'pending' ? <span className="tag">JUDGING</span> : f.is_first ? <span className="tag first">1ST</span> : f.bounty_mult > 1 ? <span className="tag bounty">×{f.bounty_mult}</span> : null}
                 </span>
                 <span className="label">
@@ -243,7 +251,7 @@ function SpeciesSheet({ s, find, info, onClose, onSnap }: {
       <div className="stack">
         {find ? (
           <div className="polaroid" style={{ maxWidth: '100%' }}>
-            <img src={find.photo_url} alt={s.common_name} />
+            <img src={find.photo_url} alt={s.common_name} decoding="async" />
             <div className="cap"><span>{s.common_name}</span><span className="sci">{s.scientific_name}</span></div>
           </div>
         ) : (

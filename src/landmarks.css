@@ -1,0 +1,49 @@
+/* Cartoon signboards for campus landmarks on Leaflet maps. */
+.lm-wrap { background: none; border: 0; }
+.lm-sign {
+  position: absolute;
+  transform: translate(-50%, -100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+}
+.lm-sign span {
+  display: block;
+  white-space: nowrap;
+  padding: 2px 9px 1px;
+  border: 2.5px solid #1b2a1f;
+  border-radius: 8px;
+  background: #fffbef;
+  color: #1b2a1f;
+  font-family: 'Baloo 2', 'Nunito', system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 13px;
+  line-height: 1.25;
+  box-shadow: 0 3px 0 #1b2a1f;
+}
+.lm-sign::after {
+  content: '';
+  display: block;
+  width: 4px;
+  height: 10px;
+  margin-top: 3px;
+  background: #8a5a2b;
+  border: 1.5px solid #1b2a1f;
+  border-radius: 2px;
+}
+.lm-sign.big span { font-size: 18px; padding: 3px 12px 2px; border-width: 3px; }
+.lm-sign.big::after { height: 14px; width: 6px; }
+
+/* Admin landmark editor */
+.lm-editor-map { height: 380px; border: 3px solid #1b2a1f; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 0 #1b2a1f; }
+.lm-draft { width: 22px; height: 22px; border-radius: 50%; background: #ff6b57; border: 3px solid #1b2a1f; box-shadow: 0 0 0 4px #fffbef; transform: translate(-50%, -50%); }
+.lm-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.lm-chips button {
+  padding: 4px 10px; border: 2.5px solid #1b2a1f; border-radius: 999px; background: #fffbef;
+  font: 800 12px 'Nunito', system-ui, sans-serif; color: #1b2a1f; cursor: pointer;
+}
+.lm-chips button:disabled { opacity: 0.4; cursor: default; }
+.lm-list { display: flex; flex-direction: column; gap: 6px; }
+.lm-row { display: flex; align-items: center; gap: 8px; padding: 6px 10px; border: 2.5px solid #1b2a1f; border-radius: 14px; background: #fff; }
+.lm-row b { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

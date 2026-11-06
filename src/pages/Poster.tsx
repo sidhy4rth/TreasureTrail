@@ -95,15 +95,11 @@ export default function Poster() {
                 <span>Common</span>
               </div>
               <div className="pst-tier">
-                <b>20</b>
-                <span>Uncommon</span>
-              </div>
-              <div className="pst-tier">
-                <b>40</b>
+                <b>25</b>
                 <span>Rare</span>
               </div>
               <div className="pst-tier legendary">
-                <b>80</b>
+                <b>50</b>
                 <span>Legendary</span>
               </div>
             </div>

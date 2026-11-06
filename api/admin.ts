@@ -16,7 +16,7 @@ import {
 } from './_lib.js';
 
 const KINDS = ['tree', 'shrub', 'herb', 'palm', 'climber', 'grass'];
-const RARITIES = ['common', 'uncommon', 'rare', 'legendary'];
+const RARITIES = ['common', 'rare', 'legendary'];
 const ROLES = ['player', 'judge', 'admin'];
 
 function isoOrNull(v: unknown, what: string): string | null {

@@ -34,7 +34,7 @@ export function computeBadges(finds: MyFind[], byId: Map<number, Species>): Badg
     b('rare', '💠', 'Sharp Eye', 'Find a rare species', sp.some((s) => s.rarity === 'rare')),
     b('legend', '💎', 'Legend', 'Find a legendary species', sp.some((s) => s.rarity === 'legendary')),
     b('first', '🥇', 'Trailblazer', 'Be first on campus to find a species', counted.some((f) => f.is_first)),
-    b('bounty', '🎯', 'Bounty Hunter', 'Catch a Wanted species', counted.some((f) => f.bounty_mult > 1)),
+    b('bounty', '🎯', 'Treasure Seeker', 'Snap a bounty species', counted.some((f) => f.bounty_mult > 1)),
     b('speed', '⚡', 'Speed Run', '3 finds within 5 minutes', speedRun),
     b('explorer', '🧭', 'Explorer', 'Finds 300 m apart', spread >= 300),
     b('sacred', '🪔', 'Temple Garden', 'Find 3 sacred plants', withTag('sacred') >= 3),

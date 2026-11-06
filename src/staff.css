@@ -231,7 +231,7 @@
 .pst-elegant p { margin: 1.6mm 0 0; font-size: 4mm; line-height: 1.45; color: var(--pst-muted); }
 .pst-elegant .kn { font-family: 'Noto Sans Kannada', 'Geist', sans-serif; font-weight: 600; color: var(--pst-ink); }
 .pst-sectlabel { font-family: 'Geist Mono', ui-monospace, monospace; font-size: 3mm; letter-spacing: 0.2em; color: var(--pst-muted); margin-bottom: 3mm; }
-.pst-score { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3mm; }
+.pst-score { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3mm; }
 .pst-tier { border: 0.35mm solid var(--pst-line); border-radius: 4mm; padding: 4mm 4mm 3.5mm; }
 .pst-tier b { display: block; font-weight: 900; font-size: 11mm; letter-spacing: -0.05em; line-height: 1; }
 .pst-tier span { display: block; font-family: 'Geist Mono', ui-monospace, monospace; font-size: 2.9mm; letter-spacing: 0.12em; text-transform: uppercase; color: var(--pst-muted); margin-top: 1.5mm; }

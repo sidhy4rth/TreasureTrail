@@ -516,7 +516,7 @@ function SpeciesSection({ onChange }: { onChange: () => void }) {
                   value={edit.rarity}
                   onChange={(e) => setEdit({ ...edit, rarity: e.target.value as Rarity, points: '' })}
                 >
-                  {['common', 'uncommon', 'rare', 'legendary'].map((k) => (
+                  {['common', 'rare', 'legendary'].map((k) => (
                     <option key={k}>{k}</option>
                   ))}
                 </select>
@@ -527,7 +527,7 @@ function SpeciesSection({ onChange }: { onChange: () => void }) {
                   className="input"
                   inputMode="numeric"
                   value={edit.points}
-                  placeholder={String({ common: 10, uncommon: 20, rare: 40, legendary: 80 }[edit.rarity])}
+                  placeholder={String(({ common: 10, rare: 25, legendary: 50 } as Record<string, number>)[edit.rarity] ?? 10)}
                   onChange={(e) => setEdit({ ...edit, points: e.target.value.replace(/\D/g, '') })}
                 />
               </div>

@@ -264,7 +264,7 @@ export interface SpeciesRow {
   active: boolean;
 }
 
-export const RARITY_POINTS: Record<string, number> = { common: 10, uncommon: 20, rare: 40, legendary: 80 };
+export const RARITY_POINTS: Record<string, number> = { common: 10, rare: 25, legendary: 50 };
 
 // ------------------------------------------------------------------ landmarks
 export interface Landmark {

@@ -30,7 +30,7 @@ The judge and admin codes are set by whoever deployed the site. Share them only 
 - Judges open `/judge` on their phones and keep it open; it refreshes itself.
 
 **Briefing for players (30 seconds)**
-- Scan, join with your student ID, pick a 4-digit PIN, and remember it.
+- Scan, join with your registration number, pick a 4-digit PIN, and remember it.
 - Crews of up to 4, or go solo. Solo scores always count.
 - Get close: one leaf or flower filling the frame. Wait for the GPS chip to turn lime.
 - Not sure what it is? Tap **Ask Elegant**.

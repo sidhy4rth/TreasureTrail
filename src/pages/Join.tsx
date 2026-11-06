@@ -99,8 +99,8 @@ export default function Join() {
             </div>
           )}
           <div className="field">
-            <label htmlFor="sid">Student ID</label>
-            <input id="sid" className="input" value={sid} onChange={(e) => setSid(e.target.value.toUpperCase())} maxLength={20} placeholder="e.g. 2026BTECH0142" autoCapitalize="characters" autoComplete="username" required />
+            <label htmlFor="sid">Registration number</label>
+            <input id="sid" className="input" value={sid} onChange={(e) => setSid(e.target.value.toUpperCase())} maxLength={40} placeholder="Your university registration number" autoCapitalize="characters" autoComplete="username" required />
           </div>
           <div className="field">
             <label htmlFor="pin">{mode === 'new' ? 'Pick a 4-digit PIN' : 'Your 4-digit PIN'}</label>

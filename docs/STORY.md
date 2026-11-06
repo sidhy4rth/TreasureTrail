@@ -38,7 +38,7 @@ The event was the next day. TREASURE TRAIL was designed, built, redesigned and d
 | **One day to build, event the next morning** | Boring, proven parts. One backend (Supabase) instead of several services. A kill switch for the riskiest dependency (the AI). |
 | **Free tiers only** | Vercel Hobby, Supabase free, Pl@ntNet's free quota (500 identifications a day), OpenStreetMap tiles. Photos compressed on the phone. Shared data cached at the edge. |
 | **Every phone, no installs** | A mobile website opened from a QR code. Installable to the home screen, but it doesn't need to be. |
-| **~100 students on one campus network** | Students sign in with student ID + PIN through our own server, not a hosted auth service, because hosted sign-up limits are per IP address and a whole campus shares a few. |
+| **~100 students on one campus network** | Students sign in with registration number + PIN through our own server, not a hosted auth service, because hosted sign-up limits are per IP address and a whole campus shares a few. |
 | **Cheap phones and patchy signal** | Compositor-only animations, no screen redraws when nothing changed, and photos that fail to upload are kept on the phone (with their original GPS and time) and retried automatically. |
 | **Trust** | Every write goes through the server. Browsers can only read public game state. Each way of cheating (fake locations, recycled photos, spamming, back-dating) has its own check. |
 

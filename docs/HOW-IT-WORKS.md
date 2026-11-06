@@ -5,8 +5,8 @@ Everything a player, judge or organiser sees in TREASURE TRAIL, and the rules un
 ## 1. Joining
 
 - Students scan the QR poster and land on the site. No install.
-- **New player:** a leaderboard name (2–24 characters), their student ID, a 4-digit PIN, and a "field buddy" avatar.
-- **Coming back on another phone:** student ID + PIN. Eight wrong PINs in a row lock that ID for 10 minutes.
+- **New player:** a leaderboard name (2–24 characters), their registration number, a 4-digit PIN, and a "field buddy" avatar.
+- **Coming back on another phone:** registration number + PIN. Eight wrong PINs in a row lock that ID for 10 minutes.
 - **Crews are optional.** Anyone can start a crew (name + emoji) and gets a 5-character crew code. Up to 4 players per crew. Everyone is always on the Solo board, and crew members also count toward the Crews board. Leaving a crew takes your finds with you; an empty crew disappears.
 
 ## 2. Snapping a find
@@ -126,4 +126,4 @@ If an upload fails because there's no connection, the find (photo, GPS fix and c
 
 ## 11. After the trail
 
-Organisers export every find as **CSV** (for spreadsheets) or **GeoJSON** (drops straight into QGIS, Google My Maps or geojson.io): time, species (common and scientific), status, coordinates, GPS accuracy, nearest landmark, player, student ID, crew, photo link and the AI's guess and confidence. That's the campus plant inventory.
+Organisers export every find as **CSV** (for spreadsheets) or **GeoJSON** (drops straight into QGIS, Google My Maps or geojson.io): time, species (common and scientific), status, coordinates, GPS accuracy, nearest landmark, player, registration number, crew, photo link and the AI's guess and confidence. That's the campus plant inventory.

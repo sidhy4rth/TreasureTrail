@@ -96,7 +96,7 @@ export function cleanPin(v: unknown): string {
 
 export function normStudentId(v: unknown): string {
   const s = str(v).toUpperCase().replace(/\s+/g, '');
-  if (!/^[A-Z0-9\-/]{3,20}$/.test(s)) fail(422, 'Enter your student ID (3–20 letters or numbers).');
+  if (!/^[A-Z0-9\-/._]{3,40}$/.test(s)) fail(422, 'Enter your registration number (3–40 letters or numbers).');
   return s;
 }
 

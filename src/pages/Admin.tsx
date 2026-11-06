@@ -685,7 +685,7 @@ function PlayersSection({ meId }: { meId: string }) {
           ↻ Refresh
         </button>
       </div>
-      <input className="input" placeholder="Search name, student ID or crew" value={q} onChange={(e) => setQ(e.target.value)} style={{ marginBottom: '0.6rem' }} />
+      <input className="input" placeholder="Search name, registration number or crew" value={q} onChange={(e) => setQ(e.target.value)} style={{ marginBottom: '0.6rem' }} />
       {!data ? (
         <Spinner />
       ) : (

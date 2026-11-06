@@ -17,14 +17,14 @@ async function join(body: Record<string, unknown>) {
     await db().from('players').select('id').eq('student_id', studentId).maybeSingle(),
     'check student id',
   );
-  if (existing) fail(409, 'This student ID already joined. Log in with your PIN instead.');
+  if (existing) fail(409, 'This registration number has already joined. Log in with your PIN instead.');
 
   const r = await db()
     .from('players')
     .insert({ display_name: name, student_id: studentId, pin_hash: await hashPin(pin), emoji })
     .select('*')
     .single();
-  if (r.error?.code === '23505') fail(409, 'This student ID already joined. Log in with your PIN instead.');
+  if (r.error?.code === '23505') fail(409, 'This registration number has already joined. Log in with your PIN instead.');
   const p = check(r, 'create player') as PlayerRow;
   return { token: makeToken(p.id), player: publicPlayer(p), team: null };
 }
@@ -36,7 +36,7 @@ async function login(body: Record<string, unknown>) {
     await db().from('players').select('*').eq('student_id', studentId).maybeSingle(),
     'load player',
   ) as PlayerRow | null;
-  if (!p) fail(404, 'No player with that student ID yet. Tap "New player" to join.');
+  if (!p) fail(404, 'No player with that registration number yet. Tap "New player" to join.');
 
   if (p.locked_until && new Date(p.locked_until).getTime() > Date.now()) {
     const mins = Math.max(1, Math.ceil((new Date(p.locked_until).getTime() - Date.now()) / 60000));

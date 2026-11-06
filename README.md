@@ -46,7 +46,7 @@ The full story, constraints and trade-offs: **[docs/STORY.md](docs/STORY.md)**.
 
 | | |
 |---|---|
-| **Scan & join** | Student ID + 4-digit PIN. Play solo, or form a crew of up to 4. Both leaderboards run at once. |
+| **Scan & join** | Registration number + 4-digit PIN. Play solo, or form a crew of up to 4. Both leaderboards run at once. |
 | **Snap** | The site locks your GPS, checks you're inside the campus trail zone, and burns a geotag stamp (coordinates, time, name) onto the photo. |
 | **Ask Elegant** | Pick the species, or let **Elegant**, the trail's guide, name it with the plant AI. When the AI agrees, points are instant. When it doesn't, a judge decides. |
 | **Snap Nature** | 58 campus plants, shown as locked tiles with riddles until you snap them. Each find unlocks a fact. |

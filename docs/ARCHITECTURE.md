@@ -70,7 +70,7 @@ erDiagram
 | Table | What it holds |
 |---|---|
 | `settings` | One row: event name, start and end, trail-zone centre and radius, GPS accuracy limit, leaderboard freeze time, AI on/off. |
-| `players` | Name, student ID (unique), scrypt-hashed PIN, team, role (player / judge / admin), avatar, failed-login counter and lock. |
+| `players` | Name, registration number (unique), scrypt-hashed PIN, team, role (player / judge / admin), avatar, failed-login counter and lock. |
 | `teams` | Crews in the UI. Name (unique, case-insensitive), 5-character crew code, emoji. |
 | `species` | Common and scientific name, accepted alternative names (incl. `Genus *` wildcards), kind, rarity, points, emoji, riddle, fun fact, tags, active flag. |
 | `finds` | Player, final species and claimed species, photo and thumbnail URLs, latitude, longitude, accuracy, capture time, upload time, the AI's top guess, score, match and raw top-5, status (provisional / pending / approved / rejected), flags, image fingerprint, bounty multiplier, judge and note. |
@@ -125,8 +125,8 @@ If the network fails before the server answers, the phone keeps the whole reques
 | Concern | How it's handled |
 |---|---|
 | Who can write | Only the server, with the privileged key held in Vercel's encrypted settings. Row-level security is on for every table with no write policies. |
-| Who can read what | Browsers call a fixed set of read functions. Student IDs and PIN hashes are never returned by any public function. |
-| Sign-in | Student ID + 4-digit PIN, hashed with scrypt and a per-player salt. Sessions are HMAC-signed tokens (7-day expiry) checked against the database on every call. 8 wrong PINs lock the ID for 10 minutes. |
+| Who can read what | Browsers call a fixed set of read functions. Registration numbers and PIN hashes are never returned by any public function. |
+| Sign-in | Registration number + 4-digit PIN, hashed with scrypt and a per-player salt. Sessions are HMAC-signed tokens (7-day expiry) checked against the database on every call. 8 wrong PINs lock the ID for 10 minutes. |
 | Why not a hosted auth service | Hosted sign-up limits are per IP address; a whole campus behind a few IPs would hit them in the first minute. Email sign-in wasn't an option either (free-tier email limits are tiny, and nobody wants to check email mid-event). |
 | Staff access | Judge and admin roles are granted by entering a staff code, checked on the server. Every judge/admin action re-checks the role in the database. |
 | Fake locations | GPS comes from the browser at capture time, with accuracy and geofence checks on the server. (A determined player can spoof GPS with developer tools; the judge queue, duplicate detection and AI cross-check are the backstops.) |

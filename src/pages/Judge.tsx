@@ -66,8 +66,8 @@ export function StaffGate({ roles, title, children }: { roles: Role[]; title: st
             }}
           >
             <div className="field">
-              <label htmlFor="sg-id">Student / staff ID</label>
-              <input id="sg-id" className="input" value={studentId} onChange={(e) => setStudentId(e.target.value)} autoComplete="username" />
+              <label htmlFor="sg-id">Registration / staff number</label>
+              <input id="sg-id" className="input" value={studentId} onChange={(e) => setStudentId(e.target.value)} maxLength={40} autoComplete="username" />
             </div>
             <div className="field">
               <label htmlFor="sg-pin">4-digit PIN</label>

@@ -54,7 +54,7 @@ export default function Poster() {
                 <div className="n">1</div>
                 <div>
                   <b>Scan &amp; join</b>
-                  <span>Use your student ID and pick a 4-digit PIN. Go solo, or start a crew of up to 4.</span>
+                  <span>Use your registration number and pick a 4-digit PIN. Go solo, or start a crew of up to 4.</span>
                 </div>
               </div>
               <div className="pst-step">

@@ -1,11 +1,11 @@
 {
-  "name": "Canopy Quest",
-  "short_name": "Canopy Quest",
-  "description": "Campus species hunt by the CoE for Nature Based Solutions, Alliance University.",
+  "name": "TREASURE TRAIL",
+  "short_name": "TREASURE TRAIL",
+  "description": "Leave the class. Discover the biodiversity along campus. Snap it.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#FFF4D6",
-  "theme_color": "#1B2A1F",
+  "background_color": "#10241A",
+  "theme_color": "#10241A",
   "icons": [
     { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
     { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }

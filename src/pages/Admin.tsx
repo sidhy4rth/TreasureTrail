@@ -59,7 +59,7 @@ function EventSection({ settings, onSaved }: { settings: Settings; onSaved: () =
           max_accuracy_m: f.max_accuracy_m,
         },
       },
-      '✅ Event settings saved',
+      'Event settings saved',
     );
     setBusy(false);
     if (r) onSaved();
@@ -72,7 +72,7 @@ function EventSection({ settings, onSaved }: { settings: Settings; onSaved: () =
       (p) => {
         setF((x) => ({ ...x, geofence_lat: p.coords.latitude.toFixed(6), geofence_lng: p.coords.longitude.toFixed(6) }));
         setLocating(false);
-        toast(`📍 Centre set (±${Math.round(p.coords.accuracy)} m). Remember to save.`);
+        toast(`Centre set (±${Math.round(p.coords.accuracy)} m). Remember to save.`);
       },
       (e) => {
         setLocating(false);
@@ -88,7 +88,7 @@ function EventSection({ settings, onSaved }: { settings: Settings; onSaved: () =
 
   return (
     <section className="card st-section">
-      <h2>🗓️ Event</h2>
+      <h2>Event</h2>
       <div className="stack">
         <div className="field">
           <label htmlFor="ev-name">Event name</label>
@@ -106,13 +106,13 @@ function EventSection({ settings, onSaved }: { settings: Settings; onSaved: () =
         </div>
         <div className="row wrap">
           <button className="btn sm ghost" onClick={() => set('starts_at', toLocal(new Date().toISOString()))}>
-            ▶ Start now
+            Start now
           </button>
           <button className="btn sm ghost" onClick={() => set('ends_at', toLocal(new Date(Date.now() + 2 * 3600_000).toISOString()))}>
-            ⏱ End in 2 h
+            End in 2 h
           </button>
           <button className="btn sm ghost" onClick={() => set('ends_at', toLocal(new Date(Date.now() + 3600_000).toISOString()))}>
-            ⏱ End in 1 h
+            End in 1 h
           </button>
           <button
             className="btn sm ghost"
@@ -140,7 +140,7 @@ function EventSection({ settings, onSaved }: { settings: Settings; onSaved: () =
           </div>
         </div>
         <button className="btn sm ghost" onClick={useMyLocation} disabled={locating}>
-          {locating ? 'Finding you…' : '📍 Use my current location as centre'}
+          {locating ? 'Finding you…' : 'Use my current location as centre'}
         </button>
         <div className="field">
           <label htmlFor="ev-radius">Radius: {f.geofence_radius_m} m</label>
@@ -204,17 +204,17 @@ function AiSwitch({ settings, onChange }: { settings: Settings; onChange: () => 
   const [busy, setBusy] = useState(false);
   const flip = async () => {
     setBusy(true);
-    const r = await run({ action: 'settings', patch: { ai_enabled: !on } }, on ? '🙋 AI off. Judges check every photo now.' : '🤖 AI back on.');
+    const r = await run({ action: 'settings', patch: { ai_enabled: !on } }, on ? 'AI off. Judges check every photo now.' : 'AI back on.');
     setBusy(false);
     setConfirm(false);
     if (r) onChange();
   };
   return (
     <div className="stack">
-      <h3>🤖 Plant AI: {on ? 'ON' : 'OFF (judges only)'}</h3>
+      <h3>Plant AI · {on ? 'ON' : 'OFF (judges only)'}</h3>
       <div className="small muted">
         {on
-          ? 'If the AI runs out of checks or misbehaves, switch it off: every new find goes to the judge queue and "Ask Sprig" is hidden.'
+          ? 'If the AI runs out of checks or misbehaves, switch it off: every new find goes to the judge queue and "Ask Elegant" is hidden.'
           : 'Every new find waits for a judge. Switch the AI back on to give instant points again.'}
       </div>
       {confirm ? (
@@ -223,7 +223,7 @@ function AiSwitch({ settings, onChange }: { settings: Settings; onChange: () => 
           <button className="btn ghost" onClick={() => setConfirm(false)}>Cancel</button>
         </div>
       ) : (
-        <button className={`btn block ${on ? 'ghost' : 'leaf'}`} onClick={() => setConfirm(true)}>{on ? '🙋 Switch to judges only' : '🤖 Turn the AI back on'}</button>
+        <button className={`btn block ${on ? 'ghost' : 'leaf'}`} onClick={() => setConfirm(true)}>{on ? 'Switch to judges only' : 'Turn the AI back on'}</button>
       )}
     </div>
   );
@@ -251,7 +251,7 @@ function LiveSection({ settings, species, onChange }: { settings: Settings; spec
   const launch = async () => {
     if (sid === '') return toast('Pick a species first.');
     setBusy(true);
-    const r = await run({ action: 'bounty', speciesId: sid, multiplier: mult, minutes: mins }, `🎯 Bounty live for ${mins} min`);
+    const r = await run({ action: 'bounty', speciesId: sid, multiplier: mult, minutes: mins }, `Bounty live for ${mins} min`);
     setBusy(false);
     if (r) {
       void load();
@@ -260,19 +260,19 @@ function LiveSection({ settings, species, onChange }: { settings: Settings; spec
   };
 
   const freeze = async () => {
-    if (await run({ action: settings.frozen ? 'reveal' : 'freeze' }, settings.frozen ? '🎉 Revealed! Watch the projector.' : '🔒 Leaderboard frozen')) onChange();
+    if (await run({ action: settings.frozen ? 'reveal' : 'freeze' }, settings.frozen ? 'Revealed. Watch the projector.' : 'Ranks frozen')) onChange();
   };
 
   return (
     <section className="card st-section">
-      <h2>🎛️ Live controls</h2>
+      <h2>Live controls</h2>
       <div className="stack">
         <div className="st-big-btns">
           <button className={`btn big ${settings.frozen ? 'sun' : ''}`} onClick={freeze}>
-            {settings.frozen ? '🎉 Reveal results' : '🔒 Freeze board'}
+            {settings.frozen ? 'Reveal results' : 'Freeze board'}
           </button>
           <Link className="btn big ghost" to="/live" target="_blank">
-            📺 Open projector
+            Open projector
           </Link>
         </div>
         <div className="small muted">
@@ -283,7 +283,7 @@ function LiveSection({ settings, species, onChange }: { settings: Settings; spec
         <hr className="dash" />
         <AiSwitch settings={settings} onChange={onChange} />
         <hr className="dash" />
-        <h3>🎯 Wanted bounty</h3>
+        <h3>Bounty</h3>
         <select className="input" value={sid} onChange={(e) => setSid(e.target.value ? Number(e.target.value) : '')}>
           <option value="">Pick a species…</option>
           {species.map((s) => (
@@ -311,15 +311,15 @@ function LiveSection({ settings, species, onChange }: { settings: Settings; spec
           ))}
         </div>
         <button className="btn sun block" onClick={launch} disabled={busy || sid === ''}>
-          🎯 Launch bounty
+          Launch bounty
         </button>
         {active.map((b) => {
           const sp = byId.get(b.species_id);
           return (
             <div key={b.id} className="bounty">
-              <div className="em">{sp?.emoji ?? '🎯'}</div>
+              <div className="em">{sp?.emoji ?? '🌿'}</div>
               <div className="grow">
-                <div style={{ fontWeight: 900 }}>WANTED: {sp?.common_name ?? `#${b.species_id}`}</div>
+                <div style={{ fontWeight: 700 }}>Bounty · {sp?.common_name ?? `#${b.species_id}`}</div>
                 <div className="small">
                   ×{b.multiplier} · {fmtCountdown(new Date(b.ends_at).getTime() - now)} left
                 </div>
@@ -391,7 +391,7 @@ function SpeciesSection({ onChange }: { onChange: () => void }) {
         action: 'species_upsert',
         species: { ...edit, points: edit.points === '' ? null : Number(edit.points) },
       },
-      edit.id ? '✅ Species updated' : '🌱 Species added',
+      edit.id ? 'Species updated' : 'Species added',
     );
     setBusy(false);
     if (r) {
@@ -429,7 +429,7 @@ function SpeciesSection({ onChange }: { onChange: () => void }) {
   return (
     <section className="card st-section">
       <div className="row spread wrap" style={{ marginBottom: '0.75rem' }}>
-        <h2 style={{ margin: 0 }}>🌿 Species ({rows?.filter((r) => r.active).length ?? '…'} active)</h2>
+        <h2 style={{ margin: 0 }}>Species ({rows?.filter((r) => r.active).length ?? '…'} active)</h2>
         <button className="btn sm leaf" onClick={() => setEdit({ ...EMPTY_SPECIES })}>
           + Add species
         </button>
@@ -640,7 +640,9 @@ function PlayerRow({ p, meId, onChanged }: { p: AdminPlayer; meId: string; onCha
         </select>
       </td>
       <td className="small">
-        ✅{counted} ⏳{p.finds.pending} ❌{p.finds.rejected}
+        <span style={{ fontFamily: 'var(--st-mono)', whiteSpace: 'nowrap' }} title={`${counted} counted · ${p.finds.pending} waiting · ${p.finds.rejected} rejected`}>
+          {counted}<span className="muted"> / </span>{p.finds.pending}<span className="muted"> / </span>{p.finds.rejected}
+        </span>
         {p.locked_until && new Date(p.locked_until).getTime() > Date.now() && <div className="pill rejected">locked</div>}
       </td>
       <td>
@@ -677,13 +679,13 @@ function PlayersSection({ meId }: { meId: string }) {
     <section className="card st-section">
       <div className="row spread wrap" style={{ marginBottom: '0.75rem' }}>
         <h2 style={{ margin: 0 }}>
-          👥 Players ({data?.players.length ?? '…'}) · Teams ({data?.teams.length ?? '…'})
+          Players ({data?.players.length ?? '…'}) · Crews ({data?.teams.length ?? '…'})
         </h2>
         <button className="btn sm ghost" onClick={() => void load()}>
           ↻ Refresh
         </button>
       </div>
-      <input className="input" placeholder="Search name, student ID or team" value={q} onChange={(e) => setQ(e.target.value)} style={{ marginBottom: '0.6rem' }} />
+      <input className="input" placeholder="Search name, student ID or crew" value={q} onChange={(e) => setQ(e.target.value)} style={{ marginBottom: '0.6rem' }} />
       {!data ? (
         <Spinner />
       ) : (
@@ -692,9 +694,9 @@ function PlayersSection({ meId }: { meId: string }) {
             <thead>
               <tr>
                 <th>Player</th>
-                <th>Team</th>
+                <th>Crew</th>
                 <th>Role</th>
-                <th>Finds</th>
+                <th style={{ whiteSpace: 'nowrap' }}>Ok / wait / no</th>
                 <th></th>
               </tr>
             </thead>
@@ -785,16 +787,16 @@ function ExportSection() {
   };
   return (
     <section className="card st-section">
-      <h2>📦 Campus plant inventory</h2>
+      <h2>Campus plant inventory</h2>
       <div className="small muted" style={{ marginBottom: '0.75rem' }}>
-        Every geotagged find with species, time and photo link, for the CoE's records. GeoJSON opens in QGIS, geojson.io or Google Earth (rejected finds left out).
+        Every geotagged find with species, time and photo link, for the records. GeoJSON opens in QGIS, geojson.io or Google Earth (rejected finds left out).
       </div>
       <div className="st-row2">
         <button className="btn" onClick={csv} disabled={busy}>
-          ⬇ CSV
+          Download CSV
         </button>
         <button className="btn" onClick={geojson} disabled={busy}>
-          ⬇ GeoJSON
+          Download GeoJSON
         </button>
       </div>
     </section>
@@ -806,9 +808,9 @@ function DangerSection({ onReset }: { onReset: () => void }) {
   const [busy, setBusy] = useState(false);
   return (
     <section className="card st-section st-danger">
-      <h2>🧨 Danger zone</h2>
+      <h2>Danger zone</h2>
       <div className="small muted" style={{ marginBottom: '0.6rem' }}>
-        Deletes every find, photo, team, bounty and player account (organiser accounts stay). Use it to wipe test data before the hunt starts. This can't be undone.
+        Deletes every find, photo, crew, bounty and player account (organiser accounts stay). Use it to wipe test data before the trail opens. This can't be undone.
       </div>
       <div className="st-inline">
         <input className="input" placeholder="Type RESET" value={typed} onChange={(e) => setTyped(e.target.value)} />
@@ -851,10 +853,10 @@ function AdminPanel() {
   };
 
   const s = state?.settings;
-  let status = 'No times set: the hunt is open';
-  if (s?.starts_at && now < new Date(s.starts_at).getTime()) status = `Starts in ${fmtCountdown(new Date(s.starts_at).getTime() - now)}`;
+  let status = 'No times set: the trail is open';
+  if (s?.starts_at && now < new Date(s.starts_at).getTime()) status = `Trail opens in ${fmtCountdown(new Date(s.starts_at).getTime() - now)}`;
   else if (s?.ends_at && now < new Date(s.ends_at).getTime()) status = `Live: ${fmtCountdown(new Date(s.ends_at).getTime() - now)} left`;
-  else if (s?.ends_at) status = 'Hunt over';
+  else if (s?.ends_at) status = 'Trail closed';
 
   return (
     <div className="st-wrap">
@@ -862,25 +864,26 @@ function AdminPanel() {
         <div className="row">
           <Logo size={38} />
           <div>
+            <div className="st-kicker">TREASURE TRAIL · organisers</div>
             <h2>Admin</h2>
             <div className="small muted">
               {session?.player.emoji} {session?.player.display_name} · {status}
-              {s?.frozen ? ' · 🔒 frozen' : ''}
+              {s?.frozen ? ' · frozen' : ''}
             </div>
           </div>
         </div>
         <div className="st-links">
           <Link className="btn sm ghost" to="/live" target="_blank">
-            📺 Projector
+            Projector
           </Link>
           <Link className="btn sm ghost" to="/judge">
-            ⚖️ Judge{state?.stats.pending ? ` (${state.stats.pending})` : ''}
+            Judge{state?.stats.pending ? ` (${state.stats.pending})` : ''}
           </Link>
           <Link className="btn sm ghost" to="/poster" target="_blank">
-            🖨️ Poster
+            Poster
           </Link>
           <Link className="btn sm ghost" to="/">
-            📖 Play
+            Play
           </Link>
           <button className="btn sm ghost" onClick={logout}>
             Log out
@@ -897,7 +900,7 @@ function AdminPanel() {
             </div>
             <div className="stat">
               <b>{state.stats.teams}</b>
-              <span>teams</span>
+              <span>crews</span>
             </div>
             <div className="stat">
               <b>{state.stats.finds}</b>
@@ -925,7 +928,7 @@ function AdminPanel() {
             <LiveSection settings={s} species={species} onChange={refresh} />
             <EventSection key={`${s.event_name}|${s.starts_at}|${s.ends_at}|${s.geofence_lat}|${s.geofence_lng}|${s.geofence_radius_m}|${s.geofence_on}|${s.max_accuracy_m}`} settings={s} onSaved={refresh} />
             <section className="card st-section">
-              <h2>📍 Campus landmarks</h2>
+              <h2>Campus landmarks</h2>
               <LandmarkEditor center={[s.geofence_lat, s.geofence_lng]} radius={s.geofence_on ? s.geofence_radius_m : undefined} />
             </section>
             <ExportSection />

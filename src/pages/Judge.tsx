@@ -4,7 +4,7 @@ import '../staff.css';
 import { api, type Session } from '../lib/api';
 import { timeAgo, useNow, usePoll, useSession, useSpecies } from '../lib/game';
 import type { Player, Role } from '../lib/types';
-import { Logo, Sheet, Spinner, toast } from '../components/ui';
+import { Elegant, Logo, Sheet, Spinner, toast } from '../components/ui';
 
 // ------------------------------------------------------------------ staff gate (shared with /admin)
 export function StaffGate({ roles, title, children }: { roles: Role[]; title: string; children: ReactNode }) {
@@ -38,7 +38,7 @@ export function StaffGate({ roles, title, children }: { roles: Role[]; title: st
       const r = await api<{ player: Player }>('auth', { action: 'promote', code: code.trim() });
       setSession({ ...session, player: r.player });
       if (!roles.includes(r.player.role)) setErr(`That code makes you a ${r.player.role}. This page needs ${roles.join(' or ')}.`);
-      else toast(`You're now a ${r.player.role} 🎉`);
+      else toast(`You're now a ${r.player.role}.`);
     } catch (e) {
       setErr((e as Error).message);
     } finally {
@@ -52,6 +52,7 @@ export function StaffGate({ roles, title, children }: { roles: Role[]; title: st
         <div className="row">
           <Logo size={40} />
           <div>
+            <div className="st-kicker">TREASURE TRAIL · staff</div>
             <h2>{title}</h2>
             <div className="muted small">Organisers and judges only</div>
           </div>
@@ -152,13 +153,13 @@ interface JudgeItem {
   judge_name: string | null;
 }
 
-const FLAG_TEXT: Record<string, [string, boolean]> = {
-  ai_disagrees: ['🤖 AI disagrees', false],
-  ai_unavailable: ['🔌 AI offline', false],
-  ai_off: ['🙋 Manual mode (AI switched off)', false],
-  ai_no_plant: ['🫥 AI saw no plant', false],
-  unknown_species: ['❓ Not on list', false],
-  duplicate_photo: ['🚨 Same photo as another player', true],
+const FLAG_TEXT: Record<string, [string, 'warn' | 'bad' | 'info']> = {
+  ai_disagrees: ['AI disagrees', 'warn'],
+  ai_unavailable: ['AI offline', 'info'],
+  ai_off: ['Manual mode · AI switched off', 'info'],
+  ai_no_plant: ['AI saw no plant', 'warn'],
+  unknown_species: ['Not on the list', 'warn'],
+  duplicate_photo: ['Same photo as another player', 'bad'],
 };
 
 function aiTop(raw: JudgeItem['ai_raw']) {
@@ -214,7 +215,7 @@ function JudgeCard({ item, onDone }: { item: JudgeItem; onDone: (id: string) => 
     setBusy(true);
     try {
       await api('judge', { findId: item.id, action, speciesId, note: note.trim() || undefined });
-      toast(action === 'reject' ? '❌ Rejected' : action === 'reassign' ? '🔁 Species changed + approved' : '✅ Approved');
+      toast(action === 'reject' ? 'Rejected' : action === 'reassign' ? 'Species changed and approved' : 'Approved');
       onDone(item.id);
     } catch (e) {
       toast((e as Error).message);
@@ -232,7 +233,7 @@ function JudgeCard({ item, onDone }: { item: JudgeItem; onDone: (id: string) => 
       <img className="jd-photo" src={item.photo_url} alt="Submitted plant" onClick={() => setZoom(true)} loading="lazy" />
       <div className="jd-body">
         <div className="row spread wrap">
-          <div style={{ fontWeight: 800 }}>
+          <div style={{ fontWeight: 700 }}>
             {item.player_emoji} {item.player_name}
             {item.team_name && (
               <span className="muted">
@@ -241,7 +242,7 @@ function JudgeCard({ item, onDone }: { item: JudgeItem; onDone: (id: string) => 
               </span>
             )}
           </div>
-          <span className={`pill ${item.status === 'pending' ? 'pending' : 'ok'}`}>{item.status === 'pending' ? '⏳ No points yet' : '⚡ Points given'}</span>
+          <span className={`pill ${item.status === 'pending' ? 'pending' : 'ok'}`}>{item.status === 'pending' ? 'No points yet' : 'Points given'}</span>
         </div>
 
         <div className="jd-vs">
@@ -255,7 +256,9 @@ function JudgeCard({ item, onDone }: { item: JudgeItem; onDone: (id: string) => 
               <div className="sci">Counted as {item.species_name}</div>
             )}
           </div>
-          <div className="jd-mark">{item.ai_match ? '✅' : item.ai_score !== null ? '⚠️' : '·'}</div>
+          <div className={`jd-mark ${item.ai_match ? 'ok' : item.ai_score !== null ? 'no' : ''}`} aria-label={item.ai_match ? 'AI agrees' : item.ai_score !== null ? 'AI disagrees' : 'No AI answer'}>
+            {item.ai_match ? '=' : item.ai_score !== null ? '≠' : '·'}
+          </div>
           <div className="jd-side">
             <div className="lbl">AI guess</div>
             <div className="val">{aiLabel ?? '—'}</div>
@@ -281,9 +284,9 @@ function JudgeCard({ item, onDone }: { item: JudgeItem; onDone: (id: string) => 
         {item.flags.length > 0 && (
           <div className="st-chips">
             {item.flags.map((f) => {
-              const [t, bad] = FLAG_TEXT[f] ?? [f, false];
+              const [t, kind] = FLAG_TEXT[f] ?? [f, 'warn'];
               return (
-                <span key={f} className={`jd-flag ${bad ? 'bad' : ''}`}>
+                <span key={f} className={`jd-flag ${kind}`}>
                   {t}
                 </span>
               );
@@ -292,9 +295,9 @@ function JudgeCard({ item, onDone }: { item: JudgeItem; onDone: (id: string) => 
         )}
 
         <div className="st-kv">
-          <span>🕒 {timeAgo(item.created_at, now)}</span>
-          {item.near && <span>🏫 near {item.near}</span>}
-          {item.accuracy_m !== null && <span>📍 ±{Math.round(item.accuracy_m)} m</span>}
+          <span>{timeAgo(item.created_at, now)}</span>
+          {item.near && <span>near {item.near}</span>}
+          {item.accuracy_m !== null && <span>GPS ±{Math.round(item.accuracy_m)} m</span>}
           <span>
             <a href={`https://maps.google.com/?q=${item.lat},${item.lng}`} target="_blank" rel="noreferrer">
               Open in Maps ↗
@@ -309,21 +312,21 @@ function JudgeCard({ item, onDone }: { item: JudgeItem; onDone: (id: string) => 
               <button className="btn ghost" onClick={() => setRejecting(false)} disabled={busy}>
                 Cancel
               </button>
-              <button className="btn clay" onClick={() => act('reject')} disabled={busy}>
-                ❌ Reject
+              <button className="btn jd-reject" onClick={() => act('reject')} disabled={busy}>
+                Reject
               </button>
             </div>
           </div>
         ) : (
           <div className="jd-actions">
-            <button className="btn leaf" disabled={busy} onClick={() => (needsSpecies ? setPicking(true) : act('approve'))}>
-              ✅ Approve
+            <button className="btn jd-approve" disabled={busy} onClick={() => (needsSpecies ? setPicking(true) : act('approve'))}>
+              Approve
             </button>
-            <button className="btn clay" disabled={busy} onClick={() => setRejecting(true)}>
-              ❌ Reject
+            <button className="btn jd-reject" disabled={busy} onClick={() => setRejecting(true)}>
+              Reject
             </button>
             <button className="btn ghost" disabled={busy} onClick={() => setPicking(true)}>
-              🔁 Species
+              Change species
             </button>
           </div>
         )}
@@ -360,8 +363,9 @@ function JudgeQueue() {
     <div className="st-wrap narrow">
       <div className="st-head">
         <div className="row">
-          <Logo size={34} />
+          <Logo size={40} />
           <div>
+            <div className="st-kicker">TREASURE TRAIL · judges</div>
             <h2>Judge queue</h2>
             <div className="small muted">
               {session?.player.emoji} {session?.player.display_name} · {session?.player.role}
@@ -401,8 +405,8 @@ function JudgeQueue() {
       {!data && !error && <Spinner />}
 
       {data && queue.length === 0 && (
-        <div className="card center stack" style={{ padding: '2rem 1rem' }}>
-          <div style={{ fontSize: '3rem' }}>🍵</div>
+        <div className="card center stack jd-empty" style={{ padding: '2rem 1rem', alignItems: 'center' }}>
+          <Elegant mood="cheer" size={84} />
           <h3>All caught up</h3>
           <div className="muted">New finds that need a look show up here automatically.</div>
           <button className="btn ghost" onClick={() => void reload()}>
@@ -420,7 +424,7 @@ function JudgeQueue() {
       {data && data.recent.length > 0 && (
         <div style={{ marginTop: '1.5rem' }}>
           <button className="btn ghost block" onClick={() => setShowRecent((s) => !s)}>
-            {showRecent ? '▾' : '▸'} Recently judged ({data.recent.length})
+            {showRecent ? 'Hide' : 'Show'} recently judged ({data.recent.length})
           </button>
           {showRecent && (
             <div className="stack" style={{ marginTop: '0.75rem', gap: '0.5rem' }}>
@@ -428,7 +432,7 @@ function JudgeQueue() {
                 <div key={r.id} className="card row" style={{ padding: '0.6rem' }}>
                   <img src={r.thumb_url} alt="" style={{ width: 56, height: 56, objectFit: 'cover', borderRadius: 10 }} />
                   <div className="grow">
-                    <div style={{ fontWeight: 800 }}>
+                    <div style={{ fontWeight: 700 }}>
                       {r.species_emoji} {r.species_name ?? 'Unknown'} <span className={`pill ${r.status === 'rejected' ? 'rejected' : 'ok'}`}>{r.status}</span>
                     </div>
                     <div className="small muted">

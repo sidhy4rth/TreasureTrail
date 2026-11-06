@@ -6,7 +6,7 @@ import { fmtCountdown, serverOffset, useGameState, useNow, usePoll, useSpecies }
 import type { BoardPlayer, BoardTeam, FeedItem, GameState, MapPoint, Species } from '../lib/types';
 import CampusMap from '../components/CampusMap';
 import { useLandmarks } from '../lib/landmarks';
-import { Sprig, burst, ordinal } from '../components/ui';
+import { Elegant, burst, ordinal } from '../components/ui';
 
 type Mode = 'teams' | 'solo';
 const ROTATE_MS = 15000;
@@ -25,7 +25,7 @@ function teamRows(teams: BoardTeam[]): Row[] {
     id: t.id,
     emoji: t.emoji,
     name: t.name,
-    meta: `${t.members} ${t.members === 1 ? 'member' : 'members'} · ${t.species} species${t.firsts ? ` · 🥇${t.firsts}` : ''}`,
+    meta: `${t.members} ${t.members === 1 ? 'member' : 'members'} · ${t.species} species${t.firsts ? ` · ${t.firsts} first` : ''}`,
     score: t.score,
   }));
 }
@@ -36,7 +36,7 @@ function soloRows(players: BoardPlayer[], teams: BoardTeam[]): Row[] {
     id: p.id,
     emoji: p.emoji,
     name: p.name,
-    meta: `${p.team_id ? (tn.get(p.team_id) ?? 'Team') : 'Solo'} · ${p.species} species${p.firsts ? ` · 🥇${p.firsts}` : ''}`,
+    meta: `${p.team_id ? (tn.get(p.team_id) ?? 'Crew') : 'Solo'} · ${p.species} species${p.firsts ? ` · ${p.firsts} first` : ''}`,
     score: p.score,
   }));
 }
@@ -108,19 +108,22 @@ function LeaderPanel({ state }: { state: GameState | null }) {
   return (
     <section className="lv-panel">
       <div className="lv-head">
-        <h2>{shown === 'teams' ? 'Top teams' : 'Top explorers'}</h2>
+        <div>
+          <span className="lv-kicker">Live ranks</span>
+          <h2>{shown === 'teams' ? 'Top crews' : 'Top explorers'}</h2>
+        </div>
         {hasTeams && (
           <div className="lv-switch">
-            <span className={shown === 'teams' ? 'on' : ''}>Teams</span>
+            <span className={shown === 'teams' ? 'on' : ''}>Crews</span>
             <span className={shown === 'solo' ? 'on' : ''}>Solo</span>
           </div>
         )}
       </div>
       {frozen ? (
         <div className="lv-frozen">
-          <Sprig mood="think" size={120} className="bob" />
-          <h3>Leaderboard frozen</h3>
-          <p>Final results at the ceremony. Keep hunting!</p>
+          <Elegant mood="think" size={120} className="bob" />
+          <h3>Ranks frozen</h3>
+          <p>Final results at the ceremony. Keep snapping.</p>
           <div className="lv-qmarks">
             {[1, 2, 3, 4, 5].map((n) => (
               <div key={n}>
@@ -133,10 +136,10 @@ function LeaderPanel({ state }: { state: GameState | null }) {
       ) : rows.length === 0 || !anyScore ? (
         <div className="lv-empty">
           <div>
-            <Sprig mood="wave" size={130} className="wiggle lv-sprig" />
-            {rows.length === 0 ? 'Waiting for explorers to join…' : 'Waiting for the first find…'}
+            <Elegant mood="wave" size={130} />
+            <b>{rows.length === 0 ? 'Waiting for explorers to join…' : 'Waiting for the first find…'}</b>
             <br />
-            Scan the QR code to play!
+            Scan the QR code to play.
           </div>
         </div>
       ) : (
@@ -160,13 +163,16 @@ function Feed({ items, byId, frozen }: { items: FeedItem[]; byId: Map<number, Sp
   return (
     <section className="lv-panel">
       <div className="lv-head">
-        <h2>Just found</h2>
+        <div>
+          <span className="lv-kicker">Snap Nature</span>
+          <h2>Just found</h2>
+        </div>
       </div>
       {items.length === 0 ? (
         <div className="lv-empty">
           <div>
-            <Sprig mood="snap" size={120} className="bob lv-sprig" />
-            Waiting for the first find…
+            <Elegant mood="snap" size={120} className="bob" />
+            <b>Waiting for the first find…</b>
           </div>
         </div>
       ) : (
@@ -174,7 +180,7 @@ function Feed({ items, byId, frozen }: { items: FeedItem[]; byId: Map<number, Sp
           {items.slice(0, 8).map((f) => {
             const sp = byId.get(f.species_id);
             const legend = sp?.rarity === 'legendary';
-            const who = f.team ? `${f.player_emoji} ${f.player} · ${f.team_emoji ?? ''} ${f.team}` : `${f.player_emoji} ${f.player}`;
+            const who = f.team ? `${f.player} · ${f.team}` : f.player;
             return (
               <div key={f.id} className={`lv-card ${legend ? 'lv-legend' : ''} ${fresh.has(f.id) ? 'lv-new' : ''}`}>
                 <img src={f.thumb_url} alt="" loading="lazy" />
@@ -182,12 +188,12 @@ function Feed({ items, byId, frozen }: { items: FeedItem[]; byId: Map<number, Sp
                   <div className="lv-cname">
                     {sp?.emoji ?? '🌿'} {sp?.common_name ?? 'A plant'}
                   </div>
-                  <div className="lv-cwho">{who}{f.near ? ` · 📍 ${f.near}` : ''}</div>
+                  <div className="lv-cwho">{who}{f.near ? ` · near ${f.near}` : ''}</div>
                   <div className="lv-cpts">
-                    {!frozen && f.pts !== null && <span className="lv-chip">+{f.pts}</span>}
-                    {legend && <span className="lv-chip sun">✨ Legendary</span>}
-                    {sp?.rarity === 'rare' && <span className="lv-chip">💠 Rare</span>}
-                    {f.bounty_mult > 1 && <span className="lv-chip clay">🎯 ×{f.bounty_mult}</span>}
+                    {!frozen && f.pts !== null && <span className="lv-chip pts">+{f.pts}</span>}
+                    {legend && <span className="lv-chip gold">Legendary</span>}
+                    {sp?.rarity === 'rare' && <span className="lv-chip rare">Rare</span>}
+                    {f.bounty_mult > 1 && <span className="lv-chip bounty">Bounty ×{f.bounty_mult}</span>}
                   </div>
                 </div>
                 {f.is_first && <div className="lv-ribbon">FIRST</div>}
@@ -206,24 +212,27 @@ function Clock({ state }: { state: GameState | null }) {
   const s = state?.settings;
   const start = s?.starts_at ? new Date(s.starts_at).getTime() : null;
   const end = s?.ends_at ? new Date(s.ends_at).getTime() : null;
-  let label = 'Hunt is on';
-  let value = '🌿';
+  let label = 'Status';
+  let value = 'Trail is live';
+  let word = true;
   let urgent = false;
   if (start && now < start) {
-    label = 'Starts in';
+    label = 'Trail opens in';
     value = fmtCountdown(start - now);
+    word = false;
   } else if (end && now < end) {
-    label = 'Time left';
+    label = 'Trail is live · time left';
     value = fmtCountdown(end - now);
+    word = false;
     urgent = end - now < 5 * 60_000;
   } else if (end && now >= end) {
-    label = 'Hunt over';
-    value = '⏰';
+    label = 'Status';
+    value = 'Trail closed';
   }
   return (
     <div className={`lv-clock ${urgent ? 'lv-urgent' : ''}`}>
       <div className="lv-label">{label}</div>
-      <div className="lv-num">{value}</div>
+      <div className={`lv-num ${word ? 'lv-word' : ''}`}>{value}</div>
     </div>
   );
 }
@@ -232,7 +241,7 @@ function Qr() {
   const [src, setSrc] = useState('');
   const url = window.location.origin;
   useEffect(() => {
-    QRCode.toDataURL(url, { margin: 1, width: 320, color: { dark: '#1B2A1F', light: '#FFFFFF' } }).then(setSrc).catch(() => {});
+    QRCode.toDataURL(url, { margin: 1, width: 320, color: { dark: '#0B1A10', light: '#FFFFFF' } }).then(setSrc).catch(() => {});
   }, [url]);
   return (
     <div className="lv-qr">
@@ -257,13 +266,13 @@ function BountyBanner({ state, byId }: { state: GameState; byId: Map<number, Spe
     <div className="lv-bounty" key={b.id}>
       <div className="lv-bem">{sp?.emoji ?? '🎯'}</div>
       <div>
-        <div className="lv-wanted">WANTED · {fmtCountdown(left)} LEFT</div>
+        <div className="lv-wanted">BOUNTY · {fmtCountdown(left)} LEFT</div>
         <div className="lv-bname">{sp?.common_name ?? 'Mystery plant'}</div>
         {sp?.hint && <div className="lv-bhint">“{sp.hint}”</div>}
       </div>
       <div className="lv-bx">
-        <div className="lv-num">×{b.multiplier}</div>
-        <span>points</span>
+        <div className="lv-mult">×{b.multiplier}</div>
+        <span>POINTS</span>
       </div>
     </div>
   );
@@ -276,22 +285,22 @@ function Ticker({ state, species, byId }: { state: GameState | null; species: Sp
   const count = (t: string) => foundSp.filter((s) => s.tags.includes(t)).length;
   const items: string[] = [];
   if (foundSp.length) {
-    items.push(`🌏 <b>${foundSp.length}</b> of ${species.length} species discovered so far`);
-    items.push(`🏡 <b>${count('native')}</b> native species found`);
-    items.push(`🦋 <b>${count('pollinator')}</b> pollinator plants mapped`);
-    items.push(`🌿 <b>${count('medicinal')}</b> medicinal plants logged`);
-    items.push(`🚩 <b>${count('invasive')}</b> invasive species reported to the CoE`);
+    items.push(`<i>/</i><b>${foundSp.length}</b> of ${species.length} species snapped so far`);
+    items.push(`<i>/</i><b>${count('native')}</b> native species found`);
+    items.push(`<i>/</i><b>${count('pollinator')}</b> pollinator plants mapped`);
+    items.push(`<i>/</i><b>${count('medicinal')}</b> medicinal plants logged`);
+    items.push(`<i>/</i><b>${count('invasive')}</b> invasive species reported`);
   }
   const pool = foundSp.length ? foundSp : species;
   // A stable rotation of facts (recent discoveries first).
   const facts = [...pool].reverse().slice(0, 14);
-  for (const s of facts) if (s.fun_fact) items.push(`${s.emoji} <b>${escapeHtml(s.common_name)}:</b> ${escapeHtml(s.fun_fact)}`);
-  if (!items.length) items.push('🍃 Find leaves and plants anywhere on campus. Every species counts!');
+  for (const s of facts) if (s.fun_fact) items.push(`<i>/</i>${s.emoji} <b>${escapeHtml(s.common_name)}.</b> ${escapeHtml(s.fun_fact)}`);
+  if (!items.length) items.push('<i>/</i>Leave the class. Discover the biodiversity along campus. Snap it.');
   const html = items.map((i) => `<span>${i}</span>`).join('');
   const chars = items.join('').length;
   return (
     <footer className="lv-ticker">
-      <div className="lv-tlabel">{foundSp.length ? 'DID YOU KNOW?' : 'FIELD NOTES'}</div>
+      <div className="lv-tlabel">DID YOU KNOW</div>
       <div className="lv-track" style={{ animationDuration: `${Math.max(40, chars / 6)}s` }} dangerouslySetInnerHTML={{ __html: html + html }} />
     </footer>
   );
@@ -324,7 +333,7 @@ function useCelebrations(items: FeedItem[] | null, byId: Map<number, Species>) {
       if (seen.current.has(f.id)) continue;
       seen.current.add(f.id);
       const sp = byId.get(f.species_id);
-      const who = f.team ? `Team ${f.team}` : f.player;
+      const who = f.team ? `Crew ${f.team}` : f.player;
       if (sp?.rarity === 'legendary') {
         add.push({ key: f.id, emoji: '✨', text: `LEGENDARY! ${who} found ${f.is_first ? 'the first ' : 'a '}${sp.common_name}!` });
       } else if (f.is_first && sp) {
@@ -386,8 +395,9 @@ function Reveal({ state, onDone }: { state: GameState; onDone: () => void }) {
   const revealed = list.slice(total - shown).reverse(); // e.g. [5th, 4th, ...]
   return (
     <div className="lv-reveal" onClick={onDone}>
-      <h2>{useTeams ? '🏆 Final team standings' : '🏆 Final standings'}</h2>
-      {shown < total && <div className="lv-drum">🥁 drumroll…</div>}
+      <div className="lv-kicker">LEAVE THE CLASS · TREASURE TRAIL</div>
+      <h2>{useTeams ? 'Final crew standings' : 'Final standings'}</h2>
+      {shown < total && <div className="lv-drum">DRUMROLL…</div>}
       <div className="lv-rlist">
         {revealed.map((r) => {
           const pos = list.findIndex((x) => x.id === r.id) + 1;
@@ -419,7 +429,7 @@ export default function Live() {
   const wasFrozen = useRef<boolean | null>(null);
 
   useEffect(() => {
-    document.title = 'Canopy Quest · Live';
+    document.title = 'TREASURE TRAIL · Live';
   }, []);
 
   useEffect(() => {
@@ -449,13 +459,16 @@ export default function Live() {
     <div className="lv-root">
       <header className="lv-top">
         <div className="lv-brand">
-          <Sprig mood="wave" size={78} className="wiggle" />
-          <div>
+          <div className="lv-mark">
+            <Elegant mood="wave" size={62} />
+          </div>
+          <div style={{ minWidth: 0 }}>
+            <div className="lv-kicker">Leave the Class</div>
             <div className="lv-titlerow">
-              <h1>{s?.event_name ?? 'Canopy Quest'}</h1>
+              <h1>{s?.event_name && s.event_name !== 'Canopy Quest' ? s.event_name.toUpperCase() : 'TREASURE TRAIL'}</h1>
               <span className="lv-live"><i />LIVE</span>
             </div>
-            <div className="lv-sub">Campus species hunt · CoE for Nature Based Solutions · Alliance University</div>
+            <div className="lv-sub">Leave the class. Discover the biodiversity along campus. Snap it.</div>
           </div>
         </div>
         <div className="lv-stats">
@@ -464,7 +477,7 @@ export default function Live() {
               {foundCount}
               <small>/{species.length || '—'}</small>
             </b>
-            <span>Species found</span>
+            <span>Species</span>
           </div>
           <div className="lv-stat">
             <b>{state?.stats.finds ?? 0}</b>
@@ -476,7 +489,7 @@ export default function Live() {
           </div>
           <div className="lv-stat">
             <b>{state?.stats.teams ?? 0}</b>
-            <span>Teams</span>
+            <span>Crews</span>
           </div>
         </div>
         <Clock state={state} />
@@ -502,12 +515,17 @@ export default function Live() {
           )}
           {state && <BountyBanner state={state} byId={byId} />}
           <div className="lv-maptag">
-            🗺️ {points?.length ?? 0} geotagged finds
-            {lm && lm.hotspots[0] ? ` · 🔥 hotspot: ${lm.hotspots[0].near} (${lm.hotspots[0].finds})` : ''}
+            <b>{points?.length ?? 0}</b> geotagged finds
+            {lm && lm.hotspots[0] ? (
+              <>
+                {' · hotspot '}
+                <b>{lm.hotspots[0].near}</b> ({lm.hotspots[0].finds})
+              </>
+            ) : null}
           </div>
           {cheer && (
             <div className="lv-celebrate" key={cheer.key}>
-              <Sprig mood="cheer" size={90} className="lv-cem" />
+              <Elegant mood="cheer" size={90} />
               <span>{cheer.text}</span>
             </div>
           )}

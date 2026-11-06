@@ -147,10 +147,10 @@ export default function LandmarkEditor({ center, radius }: Props) {
       </p>
       <div className="row wrap">
         <div className="tabs" style={{ flex: 1, minWidth: 200 }}>
-          <button type="button" className={view === 'sat' ? 'on' : ''} onClick={() => setView('sat')}>🛰️ Satellite</button>
-          <button type="button" className={view === 'street' ? 'on' : ''} onClick={() => setView('street')}>🗺️ Street</button>
+          <button type="button" className={view === 'sat' ? 'on' : ''} onClick={() => setView('sat')}>Satellite</button>
+          <button type="button" className={view === 'street' ? 'on' : ''} onClick={() => setView('street')}>Street</button>
         </div>
-        <button type="button" className="btn sm ghost" onClick={hereGps}>📍 Pin where I'm standing</button>
+        <button type="button" className="btn sm ghost" onClick={hereGps}>Pin where I'm standing</button>
       </div>
       <div ref={el} className="lm-editor-map" />
 
@@ -187,7 +187,7 @@ export default function LandmarkEditor({ center, radius }: Props) {
             ) : (
               <>
                 <button type="button" className="btn sm ghost" onClick={() => startEdit(l)}>Move / edit</button>
-                <button type="button" className="btn sm ghost" aria-label={`Delete ${l.name}`} onClick={() => setConfirmDel(l.id)}>🗑️</button>
+                <button type="button" className="btn sm ghost" aria-label={`Delete ${l.name}`} onClick={() => setConfirmDel(l.id)}>Delete</button>
               </>
             )}
           </div>

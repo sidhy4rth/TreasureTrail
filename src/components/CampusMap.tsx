@@ -62,7 +62,7 @@ export default function CampusMap({ center, radius, points, byId, highlightPlaye
     if (!m) return;
     fence.current?.remove();
     if (radius) {
-      fence.current = L.circle(center, { radius, color: '#1B2A1F', weight: 3, dashArray: '10 9', fillColor: '#C6F06B', fillOpacity: 0.08 }).addTo(m);
+      fence.current = L.circle(center, { radius, color: '#C8FF2E', weight: 2, opacity: 0.8, dashArray: '8 8', fillColor: '#C8FF2E', fillOpacity: 0.05 }).addTo(m);
     }
   }, [center[0], center[1], radius]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -76,12 +76,12 @@ export default function CampusMap({ center, radius, points, byId, highlightPlaye
       seen.current.add(p.id);
       const mine = highlightPlayer && p.player_id === highlightPlayer;
       const html = `<div class="mpin ${p.first ? 'first' : ''} ${mine ? 'mine' : ''} ${isNew ? 'pin-new' : ''}"><span>${sp?.emoji ?? '🌿'}</span></div>`;
-      const sz = p.first ? 46 : 38;
+      const sz = p.first ? 42 : 34;
       // Teardrop tip points down-left after the -45° turn; anchor near the bottom of the box.
       const icon = L.divIcon({ html, className: '', iconSize: [sz, sz], iconAnchor: [sz / 2, Math.round(sz * 1.2)], popupAnchor: [0, -sz] });
       const mk = L.marker([p.lat, p.lng], { icon });
       mk.bindPopup(
-        `<div style="width:150px"><img src="${p.thumb}" style="width:100%;border-radius:10px;border:2.5px solid #1B2A1F" alt=""/><b style="font-family:'Baloo 2',sans-serif;font-size:16px">${sp?.common_name ?? 'Plant'}</b><br/><span style="color:#4A5A47">${escapeHtml(p.player)}${p.first ? ' · 🥇 first!' : ''}${p.near ? `<br/>📍 near ${escapeHtml(p.near)}` : ''}</span></div>`,
+        `<div style="width:160px"><img src="${p.thumb}" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:10px;margin-bottom:6px" alt=""/><b style="font-size:15px;letter-spacing:-0.02em">${sp?.common_name ?? 'Plant'}</b><br/><span style="color:#9AA39A;font-size:12px">${escapeHtml(p.player)}${p.first ? ' · <span style="color:#F5C451">first on campus</span>' : ''}${p.near ? `<br/>near ${escapeHtml(p.near)}` : ''}</span></div>`,
       );
       mk.addTo(g);
     }
@@ -97,8 +97,8 @@ export default function CampusMap({ center, radius, points, byId, highlightPlaye
     if (!g) return;
     g.clearLayers();
     if (me) {
-      L.circle([me.lat, me.lng], { radius: me.accuracy, color: '#2A8FD0', weight: 2, fillColor: '#5EC8F2', fillOpacity: 0.2 }).addTo(g);
-      L.circleMarker([me.lat, me.lng], { radius: 8, color: '#fff', weight: 4, fillColor: '#2A8FD0', fillOpacity: 1 }).addTo(g);
+      L.circle([me.lat, me.lng], { radius: me.accuracy, color: '#5EC8F2', weight: 1, fillColor: '#5EC8F2', fillOpacity: 0.15 }).addTo(g);
+      L.circleMarker([me.lat, me.lng], { radius: 7, color: '#10241A', weight: 3, fillColor: '#5EC8F2', fillOpacity: 1 }).addTo(g);
     }
   }, [me?.lat, me?.lng, me?.accuracy]); // eslint-disable-line react-hooks/exhaustive-deps
 

@@ -161,8 +161,8 @@ export default route(['POST'], async (req) => {
   if (!staff) {
     const starts = settings.starts_at ? Date.parse(settings.starts_at) : null;
     const ends = settings.ends_at ? Date.parse(settings.ends_at) : null;
-    if (starts !== null && (now < starts || capturedMs < starts)) fail(403, "The hunt hasn't started yet.");
-    if (ends !== null && (capturedMs > ends || now > ends + 30 * 60 * 1000)) fail(403, 'The hunt is over.');
+    if (starts !== null && (now < starts || capturedMs < starts)) fail(403, "The trail opens soon. Hang tight!");
+    if (ends !== null && (capturedMs > ends || now > ends + 30 * 60 * 1000)) fail(403, 'The trail is closed. See you at the results!');
   }
 
   // c. GPS quality + geofence (staff exempt, so organisers can test from anywhere)
@@ -177,7 +177,7 @@ export default route(['POST'], async (req) => {
       settings.geofence_on &&
       distanceM(lat, lng, settings.geofence_lat, settings.geofence_lng) > settings.geofence_radius_m
     ) {
-      fail(422, 'That spot is outside the campus hunt zone.');
+      fail(422, 'That spot is outside the campus trail zone.');
     }
   }
 
@@ -217,7 +217,7 @@ export default route(['POST'], async (req) => {
   let claimed: SpeciesRow | null = null;
   if (speciesId !== null) {
     claimed = list.find((s) => s.id === speciesId) ?? null;
-    if (!claimed) fail(404, 'That species is not in the hunt. Pick another.');
+    if (!claimed) fail(404, 'That species is not on the trail. Pick another.');
     if (await alreadyInJournal(p.id, claimed.id)) {
       fail(409, `${claimed.common_name} is already in your journal. Find something new!`);
     }

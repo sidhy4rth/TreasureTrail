@@ -73,7 +73,38 @@ function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: numbe
   ctx.closePath();
 }
 
-/** Field-journal geotag stamp along the bottom of the photo. */
+const ELEGANT_PATHS = [
+  'M32 6C46 18 52 32 46 46C42 54 36 58 32 58C28 58 22 54 18 46C12 32 18 18 32 6Z',
+  'M32 12V26',
+  'M44 38C47 41 48 45 47 50',
+  'M28 46Q32 49 36 46',
+  'M32 58V63',
+];
+
+/** Draws Elegant (the leaf with a monocle) centred at cx, cy with the given size. */
+function drawElegant(ctx: CanvasRenderingContext2D, cx: number, cy: number, size: number, color: string) {
+  ctx.save();
+  const k = size / 72;
+  ctx.translate(cx - 32 * k, cy - 34 * k);
+  ctx.scale(k, k);
+  ctx.strokeStyle = color;
+  ctx.fillStyle = color;
+  ctx.lineWidth = 4;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  for (const d of ELEGANT_PATHS) ctx.stroke(new Path2D(d));
+  ctx.beginPath();
+  ctx.arc(38, 36, 6, 0, Math.PI * 2);
+  ctx.stroke();
+  for (const x of [26, 38]) {
+    ctx.beginPath();
+    ctx.arc(x, 36, 2.2, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.restore();
+}
+
+/** Geotag stamp along the bottom of the photo. */
 function drawStamp(ctx: CanvasRenderingContext2D, w: number, h: number, s: StampInfo) {
   const u = Math.max(w, h) / 1600; // scale unit
   const pad = 26 * u;
@@ -81,55 +112,52 @@ function drawStamp(ctx: CanvasRenderingContext2D, w: number, h: number, s: Stamp
   const y0 = h - boxH - pad;
 
   const grad = ctx.createLinearGradient(0, h - boxH * 1.9, 0, h);
-  grad.addColorStop(0, 'rgba(27,42,31,0)');
-  grad.addColorStop(1, 'rgba(27,42,31,0.78)');
+  grad.addColorStop(0, 'rgba(16,36,26,0)');
+  grad.addColorStop(1, 'rgba(16,36,26,0.88)');
   ctx.fillStyle = grad;
   ctx.fillRect(0, h - boxH * 1.9, w, boxH * 1.9);
 
-  // badge circle
-  const r = 58 * u;
+  // lime badge with Elegant
+  const r = 56 * u;
   const cx = pad + r;
   const cy = y0 + boxH / 2;
-  ctx.fillStyle = '#FFC93C';
+  ctx.fillStyle = '#C8FF2E';
   ctx.beginPath();
   ctx.arc(cx, cy, r, 0, Math.PI * 2);
   ctx.fill();
-  ctx.lineWidth = 7 * u;
-  ctx.strokeStyle = '#1B2A1F';
-  ctx.stroke();
-  ctx.font = `${62 * u}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif`;
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText('🍃', cx, cy + 4 * u);
+  drawElegant(ctx, cx, cy, r * 1.35, '#0B1A10');
 
-  const tx = cx + r + 22 * u;
+  const tx = cx + r + 24 * u;
   ctx.textAlign = 'left';
   ctx.textBaseline = 'alphabetic';
-  ctx.fillStyle = '#ffffff';
-  ctx.font = `800 ${54 * u}px "Baloo 2", system-ui, sans-serif`;
+  ctx.fillStyle = '#F2F5EF';
+  ctx.font = `800 ${52 * u}px "Geist", system-ui, sans-serif`;
   ctx.fillText(s.species, tx, y0 + 52 * u, w - tx - pad);
 
-  ctx.font = `900 ${31 * u}px "Nunito", system-ui, sans-serif`;
-  ctx.fillStyle = '#FFC93C';
+  ctx.font = `600 ${29 * u}px "Geist Mono", ui-monospace, monospace`;
+  ctx.fillStyle = '#C8FF2E';
   const lat = `${Math.abs(s.lat).toFixed(5)}°${s.lat >= 0 ? 'N' : 'S'}`;
   const lng = `${Math.abs(s.lng).toFixed(5)}°${s.lng >= 0 ? 'E' : 'W'}`;
-  ctx.fillText(`📍 ${lat}  ${lng}  ±${Math.round(s.accuracy)} m`, tx, y0 + 100 * u, w - tx - pad);
+  ctx.fillText(`${lat}  ${lng}  ±${Math.round(s.accuracy)} m`, tx, y0 + 100 * u, w - tx - pad);
 
-  ctx.fillStyle = 'rgba(255,255,255,0.88)';
-  ctx.font = `700 ${28 * u}px "Nunito", system-ui, sans-serif`;
+  ctx.fillStyle = 'rgba(242,245,239,0.88)';
+  ctx.font = `500 ${27 * u}px "Geist", system-ui, sans-serif`;
   const when = s.at.toLocaleString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
   const who = s.team ? `${s.player} · ${s.team}` : s.player;
-  ctx.fillText(`${when} · ${who} · Canopy Quest`, tx, y0 + 144 * u, w - tx - pad);
+  ctx.fillText(`${when} · ${who} · TREASURE TRAIL · LEAVE THE CLASS`, tx, y0 + 144 * u, w - tx - pad);
 
   // corner tag
-  ctx.font = `900 ${24 * u}px "Nunito", system-ui, sans-serif`;
-  const tag = 'GEOTAGGED · CoE NBS';
-  const tw = ctx.measureText(tag).width + 28 * u;
-  ctx.fillStyle = 'rgba(27,42,31,0.7)';
+  ctx.font = `600 ${23 * u}px "Geist Mono", ui-monospace, monospace`;
+  const tag = 'GEOTAGGED · TREASURE TRAIL';
+  const tw = ctx.measureText(tag).width + 30 * u;
+  ctx.fillStyle = 'rgba(16,36,26,0.78)';
   roundRect(ctx, w - tw - pad, pad, tw, 44 * u, 22 * u);
   ctx.fill();
-  ctx.fillStyle = '#ffffff';
-  ctx.fillText(tag, w - tw - pad + 14 * u, pad + 31 * u);
+  ctx.strokeStyle = 'rgba(200,255,46,0.6)';
+  ctx.lineWidth = 2 * u;
+  ctx.stroke();
+  ctx.fillStyle = '#C8FF2E';
+  ctx.fillText(tag, w - tw - pad + 15 * u, pad + 30 * u);
 }
 
 export interface Processed {
@@ -141,6 +169,11 @@ export interface Processed {
 
 export async function processPhoto(img: HTMLImageElement, stamp: StampInfo): Promise<Processed> {
   try {
+    await Promise.all([
+      document.fonts.load('800 52px "Geist"'),
+      document.fonts.load('500 27px "Geist"'),
+      document.fonts.load('600 29px "Geist Mono"'),
+    ]);
     await document.fonts.ready;
   } catch {
     /* ignore */

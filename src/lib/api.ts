@@ -25,7 +25,16 @@ export async function rpc<T>(fn: string, args: Record<string, unknown> = {}): Pr
       const q = new URLSearchParams({ fn });
       if (fn === 'feed' && typeof args.n === 'number') q.set('n', String(args.n));
       const r = await fetch(`/api/public?${q}`);
-      if (r.ok) return (await r.json()) as T;
+      if (r.ok) {
+        const data = await r.json();
+        // A cached game_state carries the server time from when it was cached; add the
+        // cache's age so countdowns don't jump back and forth between refreshes.
+        const age = Number(r.headers.get('age') || 0);
+        if (fn === 'game_state' && age > 0 && data && typeof data.now === 'string') {
+          data.now = new Date(new Date(data.now).getTime() + age * 1000).toISOString();
+        }
+        return data as T;
+      }
     } catch {
       /* fall through to the direct call */
     }

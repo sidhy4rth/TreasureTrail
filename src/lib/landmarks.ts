@@ -40,12 +40,27 @@ export function landmarkIcon(label: string, big = false) {
   });
 }
 
-/** Highlighted two-line signboard for a featured landmark (the CoE headquarters). */
+const ELEGANT_SVG =
+  '<svg viewBox="-4 -2 72 72" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+  '<path d="M32 6C46 18 52 32 46 46C42 54 36 58 32 58C28 58 22 54 18 46C12 32 18 18 32 6Z"/><path d="M32 12V26"/>' +
+  '<circle cx="38" cy="36" r="6"/><path d="M44 38C47 41 48 45 47 50"/>' +
+  '<circle cx="26" cy="36" r="2.4" fill="currentColor" stroke="none"/><circle cx="38" cy="36" r="2.4" fill="currentColor" stroke="none"/>' +
+  '<path d="M28 46Q32 49 36 46"/></svg>';
+
+/**
+ * The CoE headquarters: a two-line signboard over an animated lime pin.
+ * The pin bobs, Elegant inside it flips like a coin, and radar rings ripple from the base.
+ */
 export function featuredIcon(l: Pick<Landmark, 'name' | 'short'>, big = false) {
   const lines = l.name.split(' · ').map((t) => `<b>${esc(t)}</b>`).join('');
   const tag = l.short ? `<i>${esc(l.short)}</i>` : '';
   return L.divIcon({
-    html: `<div class="lm-sign hq ${big ? 'big' : ''}"><span><em>HQ</em>${lines}${tag}</span></div>`,
+    html:
+      `<div class="lm-hq ${big ? 'big' : ''}">` +
+      `<div class="lm-sign hq ${big ? 'big' : ''}"><span><em>HQ</em>${lines}${tag}</span></div>` +
+      `<div class="hq-pin"><span class="hq-ripple"></span><span class="hq-ripple r2"></span><span class="hq-shadow"></span>` +
+      `<span class="hq-drop"><span class="hq-face">${ELEGANT_SVG}</span></span></div>` +
+      `</div>`,
     className: 'lm-wrap',
     iconSize: [0, 0],
     iconAnchor: [0, 0],

@@ -164,8 +164,8 @@ export default function LandmarkEditor({ center, radius }: Props) {
           ))}
         </div>
         <div className="row wrap">
-          <input className="input" style={{ flex: 2, minWidth: 160 }} placeholder="Name, e.g. Learning Centre 1" value={name} maxLength={40} onChange={(e) => setName(e.target.value)} aria-label="Landmark name" />
-          <input className="input" style={{ flex: 1, minWidth: 90 }} placeholder="Label, e.g. LC 1" value={short} maxLength={10} onChange={(e) => setShort(e.target.value)} aria-label="Short label on the map" />
+          <input className="input" style={{ flex: 2, minWidth: 160 }} placeholder="Name, e.g. Learning Centre 1" value={name} maxLength={80} onChange={(e) => setName(e.target.value)} aria-label="Landmark name" />
+          <input className="input" style={{ flex: 1, minWidth: 90 }} placeholder="Label, e.g. LC 1" value={short} maxLength={16} onChange={(e) => setShort(e.target.value)} aria-label="Short label on the map" />
         </div>
         <div className="row">
           <button type="button" className="btn leaf grow" disabled={!draft || !name.trim() || busy} onClick={save}>{busy ? 'Saving…' : editId ? 'Save changes' : 'Add landmark'}</button>

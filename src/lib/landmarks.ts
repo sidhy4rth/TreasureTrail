@@ -9,6 +9,7 @@ export interface Landmark {
   short: string;
   lat: number;
   lng: number;
+  featured?: boolean;
 }
 
 export interface Hotspot {
@@ -39,11 +40,24 @@ export function landmarkIcon(label: string, big = false) {
   });
 }
 
+/** Highlighted two-line signboard for a featured landmark (the CoE headquarters). */
+export function featuredIcon(l: Pick<Landmark, 'name' | 'short'>, big = false) {
+  const lines = l.name.split(' · ').map((t) => `<b>${esc(t)}</b>`).join('');
+  const tag = l.short ? `<i>${esc(l.short)}</i>` : '';
+  return L.divIcon({
+    html: `<div class="lm-sign hq ${big ? 'big' : ''}"><span><em>HQ</em>${lines}${tag}</span></div>`,
+    className: 'lm-wrap',
+    iconSize: [0, 0],
+    iconAnchor: [0, 0],
+  });
+}
+
 /** Adds signboards for every landmark to a layer group (clears it first). */
 export function drawLandmarks(group: L.LayerGroup, landmarks: Landmark[], big = false) {
   group.clearLayers();
   for (const l of landmarks) {
-    L.marker([l.lat, l.lng], { icon: landmarkIcon(landmarkLabel(l), big), interactive: false, keyboard: false, zIndexOffset: -500 }).addTo(group);
+    const icon = l.featured ? featuredIcon(l, big) : landmarkIcon(landmarkLabel(l), big);
+    L.marker([l.lat, l.lng], { icon, interactive: false, keyboard: false, zIndexOffset: l.featured ? 400 : -500 }).addTo(group);
   }
 }
 

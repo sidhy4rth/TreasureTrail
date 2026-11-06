@@ -273,10 +273,11 @@ export interface Landmark {
   short: string;
   lat: number;
   lng: number;
+  featured?: boolean;
 }
 
 export async function loadLandmarks(): Promise<Landmark[]> {
-  return check(await db().from('landmarks').select('id, name, short, lat, lng'), 'load landmarks') as Landmark[];
+  return check(await db().from('landmarks').select('id, name, short, lat, lng, featured'), 'load landmarks') as Landmark[];
 }
 
 /** Label of the closest landmark within 250 m, or null. */

@@ -351,8 +351,8 @@ export default route(['POST'], async (req) => {
       const short = str(body.short).replace(/\s+/g, ' ');
       const lat = num(body.lat);
       const lng = num(body.lng);
-      if (name.length < 1 || name.length > 40) fail(422, 'Landmark name must be 1–40 characters.');
-      if (short.length > 10) fail(422, 'Short label must be 10 characters or less.');
+      if (name.length < 1 || name.length > 80) fail(422, 'Landmark name must be 1–80 characters.');
+      if (short.length > 16) fail(422, 'Short label must be 16 characters or less.');
       if (lat === null || lng === null || Math.abs(lat) > 90 || Math.abs(lng) > 180) fail(422, 'Pick a spot on the map.');
       const row = { name, short, lat, lng };
       const l = id
